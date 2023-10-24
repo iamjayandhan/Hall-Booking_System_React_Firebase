@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './MainPage.css';
 import { db } from './firebase';
-import { addDoc, collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 
 const MainPage = () => {
   const [selectedType, setSelectedType] = useState('hall'); // Default to hall
@@ -112,7 +112,7 @@ const MainPage = () => {
   
     // Add the new booking to Firestore
     try {
-      const docRef = await addDoc(bookingsCollectionRef, newBooking);
+      // const docRef = await addDoc(bookingsCollectionRef, newBooking);
       alert('Booking successfully added to Firestore!');
       setBookingDate('');
       setBookingTimeFrom('');
