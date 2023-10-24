@@ -5,8 +5,3 @@
   [scheduled.functions.cleanup]
     schedule = "*/2 * * * *"
     timezone = "Asia/Kolkata"
-
-[[plugins]]
-  package = "@netlify/plugin-functions-core"
-  [plugins.inputs]
-    node_bundler = "esbuild"
