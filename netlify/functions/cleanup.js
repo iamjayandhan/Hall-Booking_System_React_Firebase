@@ -3,7 +3,7 @@ export default async function handler(req, res) {
       // Initialize Firebase Admin SDK
       const admin = require("firebase-admin");
       const path = require("path");
-      const serviceAccount = require(path.resolve(__dirname, "../../key.json"));    
+      const serviceAccount = require(path.resolve(__dirname, "../../key.json"));
       admin.initializeApp({
         credential: admin.credential.cert(serviceAccount),
         databaseURL: "https://hall-allocation-c720d.firebaseio.com",
@@ -17,18 +17,32 @@ export default async function handler(req, res) {
   
       console.log("Cleanup function started at", now.toISOString());
   
-      // Query bookings that have ended
-      const expiredBookingsQuery = bookingsRef
-        .where("date", "<=", now.toISOString().split("T")[0])
-        .where("endTime", "<=", now.toTimeString().split(" ")[0]);
+      // Create two separate queries for "date" and "endTime" filters
+      const dateQuery = bookingsRef.where("date", "<=", now.toISOString().split("T")[0]);
+      const endTimeQuery = bookingsRef.where("endTime", "<=", now.toTimeString().split(" ")[0]);
   
-      const querySnapshot = await expiredBookingsQuery.get();
+      // Perform the queries
+      const [dateSnapshot, endTimeSnapshot] = await Promise.all([
+        dateQuery.get(),
+        endTimeQuery.get(),
+      ]);
   
-      if (!querySnapshot.empty) {
+      // Combine the results of the two queries
+      const expiredBookings = new Set();
+  
+      dateSnapshot.forEach((doc) => {
+        if (endTimeSnapshot.docs.some((endTimeDoc) => endTimeDoc.id === doc.id)) {
+          expiredBookings.add(doc.id);
+        }
+      });
+  
+      if (expiredBookings.size > 0) {
         const batch = db.batch();
-        querySnapshot.docs.forEach((doc) => {
-          batch.delete(doc.ref);
-          console.log("Deleted expired booking:", doc.id);
+  
+        expiredBookings.forEach((bookingId) => {
+          const bookingRef = bookingsRef.doc(bookingId);
+          batch.delete(bookingRef);
+          console.log("Deleted expired booking:", bookingId);
         });
   
         await batch.commit();
