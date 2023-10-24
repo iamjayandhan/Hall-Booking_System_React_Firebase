@@ -1,27 +1,27 @@
 export default async function handler(req, res) {
-    // Initialize Firebase Admin SDK
-    const admin = require("firebase-admin");
-    const path = require("path");
-    const serviceAccount = require(path.resolve(__dirname, "../../key.json"));    
-    admin.initializeApp({
+    try {
+      // Initialize Firebase Admin SDK
+      const admin = require("firebase-admin");
+      const path = require("path");
+      const serviceAccount = require(path.resolve(__dirname, "../../key.json"));    
+      admin.initializeApp({
         credential: admin.credential.cert(serviceAccount),
         databaseURL: "https://hall-allocation-c720d.firebaseio.com",
       });
   
-    const now = new Date();
+      const now = new Date();
   
-    // Reference to the "bookings" collection in Firestore
-    const db = admin.firestore();
-    const bookingsRef = db.collection("bookings");
+      // Reference to the "bookings" collection in Firestore
+      const db = admin.firestore();
+      const bookingsRef = db.collection("bookings");
   
-    console.log("Cleanup function started at", now.toISOString());
+      console.log("Cleanup function started at", now.toISOString());
   
-    // Query bookings that have ended
-    const expiredBookingsQuery = bookingsRef
-      .where("date", "<=", now.toISOString().split("T")[0])
-      .where("endTime", "<", now.toTimeString().split(" ")[0]);
+      // Query bookings that have ended
+      const expiredBookingsQuery = bookingsRef
+        .where("date", "<=", now.toISOString().split("T")[0])
+        .where("endTime", "<=", now.toTimeString().split(" ")[0]);
   
-    try {
       const querySnapshot = await expiredBookingsQuery.get();
   
       if (!querySnapshot.empty) {
@@ -37,10 +37,14 @@ export default async function handler(req, res) {
         console.log("No expired bookings found.");
       }
   
-      res.status(200).end("Cleanup completed.");
+      // Send a response with a 200 status code
+      res.statusCode = 200;
+      res.end("Cleanup completed.");
     } catch (error) {
+      // Handle any errors and send a response with a 500 status code
       console.error("Error cleaning up expired bookings:", error);
-      res.status(500).end("Cleanup failed.");
+      res.statusCode = 500;
+      res.end("Cleanup failed.");
     }
   }
   
