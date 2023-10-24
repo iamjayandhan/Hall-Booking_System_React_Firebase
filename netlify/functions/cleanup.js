@@ -1,4 +1,4 @@
-export default async function handler(req, res) {
+export async function handler(event, context, callback) {
     try {
       // Initialize Firebase Admin SDK
       const admin = require("firebase-admin");
@@ -51,14 +51,18 @@ export default async function handler(req, res) {
         console.log("No expired bookings found.");
       }
   
-      // Send a response with a 200 status code
-      res.statusCode = 200;
-      res.end("Cleanup completed.");
+      // Send a response to the callback function
+      callback(null, {
+        statusCode: 200,
+        body: "Cleanup completed.",
+      });
     } catch (error) {
-      // Handle any errors and send a response with a 500 status code
+      // Handle any errors and send an error response to the callback function
       console.error("Error cleaning up expired bookings:", error);
-      res.statusCode = 500;
-      res.end("Cleanup failed.");
+      callback(null, {
+        statusCode: 500,
+        body: "Cleanup failed.",
+      });
     }
   }
   
