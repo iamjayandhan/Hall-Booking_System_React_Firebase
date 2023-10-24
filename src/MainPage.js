@@ -69,13 +69,13 @@ const MainPage = () => {
       return;
     }
   
-    const newBooking = {
-      hallId: selectedHall.id,
-      date: bookingDate,
-      startTime: bookingTimeFrom,
-      endTime: bookingTimeTo,
-      username: bookingUsername,
-    };
+    // const newBooking = {
+    //   hallId: selectedHall.id,
+    //   date: bookingDate,
+    //   startTime: bookingTimeFrom,
+    //   endTime: bookingTimeTo,
+    //   username: bookingUsername,
+    // };
   
     const bookingsCollectionRef = collection(db, 'bookings');
   
