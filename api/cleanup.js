@@ -4,18 +4,15 @@ export default async function handler(req, res) {
     admin.initializeApp();
   
     const now = new Date();
-
-    // Get today's date in the same format as your Firestore data ("YYYY-MM-DD")
-    const todayDateString = now.toISOString().split('T')[0];
   
     // Reference to the "bookings" collection in Firestore
     const db = admin.firestore();
     const bookingsRef = db.collection("bookings");
   
-    // Query bookings that have ended for today
+    // Query bookings that have ended
     const expiredBookingsQuery = bookingsRef
-      .where("endTime", "<", now)
-      .where("date", "==", todayDateString);
+      .where("date", "<=", now.toISOString().split("T")[0])
+      .where("endTime", "<", now.toTimeString().split(" ")[0]);
   
     try {
       const querySnapshot = await expiredBookingsQuery.get();
@@ -35,3 +32,4 @@ export default async function handler(req, res) {
       res.status(500).end("Cleanup failed.");
     }
   }
+  
