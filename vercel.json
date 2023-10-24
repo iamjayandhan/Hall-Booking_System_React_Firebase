@@ -1,10 +1,7 @@
 {
-    "name": "hallbooking", 
-    "version": 2,
-  
-    "routes": [
-      { "handle": "filesystem" },
-      { "src": "/api/.*", "dest": "/api/cleanup.js" }
-    ]
+    "crons": [{
+      "path": "/api/cleanup",
+      "schedule": "*/2 * * * *"
+    }]
   }
   
