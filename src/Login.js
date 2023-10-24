@@ -1,34 +1,45 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { db } from './firebase';
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [loginMessage, setLoginMessage] = useState(''); // Initialize with an empty string
-  const [showAuthenticatingMessage, setShowAuthenticatingMessage] = useState(false);
-
+  const [loginMessage, setLoginMessage] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
-    const storedPassword = localStorage.getItem(username);
+    const usersCollectionRef = collection(db, 'users');
+    const q = query(usersCollectionRef, where('username', '==', username));
 
-    if (password === storedPassword) {
-      // Set the "Authenticating..." message
-      setLoginMessage('Authenticating...');
-      setShowAuthenticatingMessage(true);
+    try {
+      // Query the Firestore collection to find the user by username
+      const querySnapshot = await getDocs(q);
 
-      // Simulate a delay of 3 seconds before navigating to MainPage.js
-      setTimeout(() => {
-        // Clear the "Authenticating..." message and navigate
-        setShowAuthenticatingMessage(false);
-        navigate('/MainPage');
-      }, 3000); // 3000 milliseconds (3 seconds)
+      if (!querySnapshot.empty) {
+        // User with the provided username exists, now check the password
+        const userDoc = querySnapshot.docs[0].data(); // Get the user document
 
-    } else {
-      // Display an error message for invalid credentials
-      setLoginMessage('Invalid credentials, please try again.'); // Update the error message here
+        if (userDoc.password === password) {
+          setLoginMessage('Authenticating...');
+
+          // Simulate a delay of 3 seconds before navigating to MainPage.js
+          setTimeout(() => {
+            setLoginMessage('');
+            navigate('/MainPage');
+          }, 3000);
+        } else {
+          setLoginMessage('Invalid credentials, please try again.');
+        }
+      } else {
+        setLoginMessage('Invalid credentials, please try again.');
+      }
+    } catch (error) {
+      console.error('Error during login:', error);
+      setLoginMessage('An error occurred during login. Please try again later.');
     }
   };
 
@@ -57,10 +68,8 @@ const Login = () => {
         <button type="submit">Login</button>
       </form>
 
-      {/* Conditionally render the login message container */}
       {loginMessage && <div id="loginMessage">{loginMessage}</div>}
 
-      {/* Add a button to redirect to the registration page */}
       <Link className='logregbtn' to="/registration">Register</Link>
     </div>
   );

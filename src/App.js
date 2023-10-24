@@ -1,6 +1,6 @@
 import React from 'react';
-import HallUploader from './HallUploader'; // Import your HallUploader component
 import './App.css';
+import Registration from './Registration';
 
 function App() {
   return (
@@ -9,7 +9,7 @@ function App() {
         <h1>Hall Data Upload</h1>
       </header>
       <main>
-        <HallUploader />
+        <Registration/>
       </main>
     </div>
   );

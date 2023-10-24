@@ -1,42 +1,45 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom'; // Import Link and useNavigate from 'react-router-dom'
-import './index.css';
+import { Link, useNavigate } from 'react-router-dom';
+import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
+import { db } from './firebase';
 
 const Registration = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [registrationMessage, setRegistrationMessage] = useState('');
-  const navigate = useNavigate(); // Use the useNavigate hook to access navigation
+  const navigate = useNavigate();
 
-  const handleRegistration = (e) => {
+  const handleRegistration = async (e) => {
     e.preventDefault();
 
-    // Check if the username is available (you can use local storage)
-    if (!localStorage.getItem(username)) {
-      // Store the user's credentials in local storage
-      localStorage.setItem(username, password);
+    const usersCollectionRef = collection(db, 'users');
+    const q = query(usersCollectionRef, where('username', '==', username));
 
-      // Display a success message with a "Login Now" button
-    //   setRegistrationMessage(
-    //     <p>
-    //       Registration successful! You can now{' '}
-    //       <Link to="/login">Login Now</Link>.
-    //     </p>
-    //   );
+    try {
+      // Check if there are any documents with the same username
+      const querySnapshot = await getDocs(q);
 
-        setRegistrationMessage('Registration successful! You can now proceed to login. Processing...');
-      // Clear the form fields
+      if (!querySnapshot.empty) {
+        setRegistrationMessage('Username already exists. Please choose a different one.');
+        return;
+      }
+
+      // If the username is available, add the user to Firestore
+      await addDoc(usersCollectionRef, {
+        username,
+        password,
+      });
+
+      setRegistrationMessage('Registration successful! You can now proceed to login. Processing...');
       setUsername('');
       setPassword('');
 
-      // Route to the login page
       setTimeout(() => {
-        // Route to the login page
         navigate('/login');
-      }, 3000); // Wait for 3 seconds (adjust the time as needed)
-    } else {
-      // Display an error message if the username is already taken
-      setRegistrationMessage('Username already exists. Please choose a different one.');
+      }, 3000);
+    } catch (error) {
+      console.error('Error during registration:', error);
+      setRegistrationMessage('An error occurred during registration. Please try again later.');
     }
   };
 
@@ -65,14 +68,8 @@ const Registration = () => {
         <button type="submit">Register</button>
       </form>
 
-      <div id="registrationMessage" className={registrationMessage ? 'visible' : 'hidden'}>
-  {registrationMessage}
-</div>
+      {registrationMessage && <div id="registrationMessage">{registrationMessage}</div>}
 
-
-
-
-      {/* Add a button to navigate to the login page */}
       <Link className='logregbtn' to="/login">Login</Link>
     </div>
   );

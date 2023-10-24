@@ -88,21 +88,12 @@ const MainPage = () => {
   
     const querySnapshot = await getDocs(hallQuery);
   
-    // Check for time conflicts with the new booking
+    // Manually filter the results to check for time conflicts
     const conflicts = querySnapshot.docs.some((doc) => {
       const booking = doc.data();
-      const startConflict = (
-        booking.startTime <= bookingTimeFrom &&
-        booking.endTime >= bookingTimeFrom
+      return (
+        booking.endTime >= bookingTimeFrom && booking.startTime <= bookingTimeTo
       );
-      const endConflict = (
-        booking.startTime <= bookingTimeTo &&
-        booking.endTime >= bookingTimeTo
-      );
-      if (startConflict || endConflict) {
-        return true;
-      }
-      return false;
     });
   
     if (conflicts) {
@@ -124,7 +115,6 @@ const MainPage = () => {
       alert('Failed to add the booking. Please try again later.');
     }
   };
-  
   
   
 
