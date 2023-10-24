@@ -1,7 +1,11 @@
 export default async function handler(req, res) {
     // Initialize Firebase Admin SDK
     const admin = require("firebase-admin");
-    admin.initializeApp();
+    const serviceAccount = require("../../key.json");
+    admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount),
+        databaseURL: "https://hall-allocation-c720d.firebaseio.com",
+      });
   
     const now = new Date();
   

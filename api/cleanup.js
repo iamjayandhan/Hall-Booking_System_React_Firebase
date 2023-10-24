@@ -26,10 +26,12 @@ export default async function handler(req, res) {
         console.log("Expired bookings cleaned up successfully.");
       }
   
-      res.status(200).end("Cleanup completed.");
+      res.statusCode = 200;
+      res.end("Cleanup completed.");
     } catch (error) {
       console.error("Error cleaning up expired bookings:", error);
-      res.status(500).end("Cleanup failed.");
+      res.statusCode = 500;
+      res.end("Cleanup failed.");
     }
   }
   
