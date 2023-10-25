@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './MainPage.css';
 import { db } from './firebase';
 import { addDoc,collection, getDocs, query, where } from 'firebase/firestore';
-import cleanup from './cleanup'; // Import the cleanup function
+import cleanup from '../cleanup';
 
 const MainPage = () => {
   const handleRefresh = async () => {
