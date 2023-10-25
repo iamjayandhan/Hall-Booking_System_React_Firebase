@@ -1,8 +1,7 @@
 const admin = require("firebase-admin");
-const path = require("path");
 
 // Replace the following path with the correct path to your key.json file
-const serviceAccount = require(path.resolve(__dirname, "./key.json"));
+const serviceAccount = require("./key.json");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -51,5 +50,3 @@ allBookingsQuery.get()
   .catch((error) => {
     console.error("Error cleaning up expired bookings:", error);
   });
-
-  
