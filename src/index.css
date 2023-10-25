@@ -115,7 +115,7 @@ button[type="submit"]:hover {
 }
 
 #registrationMessage {
-  background-color: #ffa618;
+  background-color: #176B87;
   color: white;
   padding: 10px;
   margin-top: 10px;
@@ -194,7 +194,7 @@ button#checkAvailability {
 
 
 #loginMessage {
-  background-color: #f33321;
+  background-color: #176B87;
   color: white;
   padding: 10px;
   margin-top: 10px;
