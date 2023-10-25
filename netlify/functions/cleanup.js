@@ -27,8 +27,11 @@ endTimeQuery.get()
     const batch = db.batch();
     if (endTimeSnapshot.size > 0) {
       endTimeSnapshot.forEach((doc) => {
-        batch.delete(doc.ref);
-        console.log("Deleted expired booking:", doc.id);
+        const bookingEndTime = new Date(doc.data().date + "T" + doc.data().endTime);
+        if (bookingEndTime <= now) {
+          batch.delete(doc.ref);
+          console.log("Deleted expired booking:", doc.id);
+        }
       });
       return batch.commit();
     } else {
