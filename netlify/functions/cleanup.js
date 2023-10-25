@@ -1,7 +1,7 @@
 export async function handler(event, context, callback) {
     try {
       // Initialize Firebase Admin SDK
-      const admin = require("../../firebase-admin");
+      const admin = require("firebase-admin");
       const path = require("path");
       const serviceAccount = require(path.resolve(__dirname, "../../key.json"));
       admin.initializeApp({
