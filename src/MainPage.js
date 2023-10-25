@@ -2,12 +2,12 @@
   import './MainPage.css';
   import { db } from './firebase';
   import { addDoc,collection, getDocs, query, where } from 'firebase/firestore';
-  import { cleanup } from './cleanup';
+  import { cleanupExpiredBookings } from './cleanup';
 
   const MainPage = () => {
     const handleRefresh = async () => {
       try {
-        await cleanup(); // Call the cleanup function
+        await cleanupExpiredBookings(); // Call the cleanup function
         alert('Cleanup function executed successfully');
       } catch (error) {
         console.error('Error executing cleanup function:', error);

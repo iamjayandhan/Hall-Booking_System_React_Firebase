@@ -11,7 +11,7 @@ const firebaseConfig = {
   measurementId: "G-GG773MRH0F"
 };
 
-(async () => {
+export const cleanupExpiredBookings = async () => {
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
@@ -52,4 +52,7 @@ const firebaseConfig = {
   } catch (error) {
     console.error("Error cleaning up expired bookings:", error);
   }
-})();
+};
+
+// Call the cleanup function
+cleanupExpiredBookings();
