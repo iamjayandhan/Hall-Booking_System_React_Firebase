@@ -141,11 +141,12 @@
     
 
     return (
+      <div className="Main">
       <div className="MainPage">
         <h1>All {selectedType === 'hall' ? 'Hall' : 'Lab'} Details</h1>
         <div className="type-selector">
-          <button onClick={() => setSelectedType('hall')}>Select Hall</button>
-          <button onClick={() => setSelectedType('lab')}>Select Lab</button>
+        <div className="button-container"><button className="button" onClick={() => setSelectedType('hall')}>Select Hall</button></div>
+        <div className="button-container"><button className="button" onClick={() => setSelectedType('lab')}>Select Lab</button></div>
         </div>
         <div className="hall-cards">
           {hallAndLabDetails
@@ -166,7 +167,10 @@
         </div>
         
         {/* Refresh Button */}
-        <button onClick={handleRefresh}>Refresh</button>
+
+        <div className="button-container">
+        <button className="button" onClick={handleRefresh}>Refresh</button>
+        </div>
 
         {/* Booking Modal */}
         {isBookingModalVisible && (
@@ -214,6 +218,7 @@
             </form>
           </div>
         )}
+        </div>
         </div>
     );
   };

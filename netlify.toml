@@ -1,4 +1,0 @@
-[scheduled.functions]
-  [scheduled.functions.cleanup]
-    schedule = "*/2 * * * *"
-    timezone = "Asia/Kolkata"

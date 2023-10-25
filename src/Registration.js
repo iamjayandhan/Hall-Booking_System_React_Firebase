@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
 import { db } from './firebase';
+import './index.css';
 
 const Registration = () => {
   const [username, setUsername] = useState('');
@@ -46,7 +47,7 @@ const Registration = () => {
   return (
     <div className='container'>
       <h1>User Registration</h1>
-      <form onSubmit={handleRegistration}>
+      <form className="form" onSubmit={handleRegistration}>
         <label htmlFor="username">Username:</label>
         <input
           type="text"
