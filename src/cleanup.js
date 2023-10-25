@@ -1,10 +1,7 @@
 const admin = require("firebase-admin");
-const path = require("path");
 
 const cleanup = async () => {
-  const keyPath = path.resolve(__dirname, "./key.json");
-
-  const serviceAccount = require(keyPath);
+  const serviceAccount = require("./key.json");
 
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
