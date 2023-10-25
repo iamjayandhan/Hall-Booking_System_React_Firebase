@@ -17,28 +17,39 @@ const bookingsRef = db.collection("bookings");
 
 console.log("Cleanup function started at", now.toISOString());
 
-// Create a query for bookings with "endTime" less than or equal to the current time
-const endTimeQuery = bookingsRef.where("endTime", "<=", now.toTimeString().split(" ")[0]);
+// Create a query for all bookings
+const allBookingsQuery = bookingsRef;
 
 // Perform the query
-endTimeQuery.get()
-  .then((endTimeSnapshot) => {
+allBookingsQuery.get()
+  .then((bookingsSnapshot) => {
     // Delete only the expired bookings
     const batch = db.batch();
-    if (endTimeSnapshot.size > 0) {
-      endTimeSnapshot.forEach((doc) => {
+    let skippedCount = 0;
+    let deletedCount = 0;
+
+    bookingsSnapshot.forEach((doc) => {
+      const bookingEndTime = new Date(doc.data().date + "T" + doc.data().endTime);
+      if (bookingEndTime <= now) {
         batch.delete(doc.ref);
         console.log("Deleted expired booking:", doc.id);
+        deletedCount++;
+      } else {
+        console.log("Skipped booking (not expired):", doc.id);
+        skippedCount++;
+      }
+    });
+
+    if (deletedCount > 0) {
+      return batch.commit().then(() => {
+        console.log("Expired bookings cleaned up successfully.");
       });
-      return batch.commit();
-    } else {
+    } else if (skippedCount > 0) {
       console.log("No expired bookings found.");
-      return Promise.resolve();
     }
-  })
-  .then(() => {
-    console.log("Expired bookings cleaned up successfully.");
   })
   .catch((error) => {
     console.error("Error cleaning up expired bookings:", error);
   });
+
+  

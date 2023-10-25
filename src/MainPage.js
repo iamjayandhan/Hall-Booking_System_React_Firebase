@@ -2,8 +2,19 @@ import React, { useState } from 'react';
 import './MainPage.css';
 import { db } from './firebase';
 import { addDoc,collection, getDocs, query, where } from 'firebase/firestore';
+import cleanup from './cleanup'; // Import the cleanup function
 
 const MainPage = () => {
+  const handleRefresh = async () => {
+    try {
+      await cleanup(); // Call the cleanup function
+      alert('Cleanup function executed successfully');
+    } catch (error) {
+      console.error('Error executing cleanup function:', error);
+      alert('Error executing cleanup function');
+    }
+  };
+  
   const [selectedType, setSelectedType] = useState('hall'); // Default to hall
   const [hallAndLabDetails] = useState([
     {
@@ -68,6 +79,7 @@ const MainPage = () => {
       alert('Please fill in all booking details.');
       return;
     }
+  
   
     const newBooking = {
       hallId: selectedHall.id,
@@ -152,6 +164,9 @@ const MainPage = () => {
             </div>
           ))}
       </div>
+      
+      {/* Refresh Button */}
+      <button onClick={handleRefresh}>Refresh</button>
 
       {/* Booking Modal */}
       {isBookingModalVisible && (
@@ -199,7 +214,7 @@ const MainPage = () => {
           </form>
         </div>
       )}
-    </div>
+      </div>
   );
 };
 
