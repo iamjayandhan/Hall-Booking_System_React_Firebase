@@ -1,60 +1,55 @@
-const admin = require('firebase-admin');
-const functions = require('firebase-functions');
+const admin = require("firebase-admin");
+const path = require("path");
 
-// Initialize Firebase Admin
-admin.initializeApp(functions.config().firebase);
+// Replace the following path with the correct path to your key.json file
+const serviceAccount = require(path.resolve(__dirname, "./key.json"));
 
-const cleanup = async () => {
-  const now = new Date();
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://hall-allocation-c720d.firebaseio.com",
+});
 
-  // Reference to the "bookings" collection in Firestore
-  const db = admin.firestore();
-  const bookingsRef = db.collection('bookings');
+const now = new Date();
 
-  console.log('Cleanup function started at', now.toISOString());
+// Reference to the "bookings" collection in Firestore
+const db = admin.firestore();
+const bookingsRef = db.collection("bookings");
 
-  try {
-    // Create a query for all bookings
-    const allBookingsQuery = bookingsRef;
+console.log("Cleanup function started at", now.toISOString());
 
-    // Perform the query
-    const bookingsSnapshot = await allBookingsQuery.get();
+// Create a query for all bookings
+const allBookingsQuery = bookingsRef;
 
+// Perform the query
+allBookingsQuery.get()
+  .then((bookingsSnapshot) => {
     // Delete only the expired bookings
     const batch = db.batch();
     let skippedCount = 0;
     let deletedCount = 0;
 
     bookingsSnapshot.forEach((doc) => {
-      const bookingEndTime = new Date(doc.data().date + 'T' + doc.data().endTime);
+      const bookingEndTime = new Date(doc.data().date + "T" + doc.data().endTime);
       if (bookingEndTime <= now) {
         batch.delete(doc.ref);
-        console.log('Deleted expired booking:', doc.id);
+        console.log("Deleted expired booking:", doc.id);
         deletedCount++;
       } else {
-        console.log('Skipped booking (not expired):', doc.id);
+        console.log("Skipped booking (not expired):", doc.id);
         skippedCount++;
       }
     });
 
     if (deletedCount > 0) {
-      await batch.commit();
-      console.log('Expired bookings cleaned up successfully.');
+      return batch.commit().then(() => {
+        console.log("Expired bookings cleaned up successfully.");
+      });
     } else if (skippedCount > 0) {
-      console.log('No expired bookings found.');
+      console.log("No expired bookings found.");
     }
-  } catch (error) {
-    console.error('Error cleaning up expired bookings:', error);
-  }
-};
+  })
+  .catch((error) => {
+    console.error("Error cleaning up expired bookings:", error);
+  });
 
-module.exports = functions.https.onRequest((req, res) => {
-  cleanup()
-    .then(() => {
-      res.status(200).send('Cleanup completed successfully');
-    })
-    .catch((error) => {
-      console.error('Cleanup failed:', error);
-      res.status(500).send('Cleanup failed');
-    });
-});
+  
