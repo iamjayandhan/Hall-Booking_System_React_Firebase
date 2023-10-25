@@ -1,36 +1,41 @@
-const admin = require("firebase-admin");
+import { initializeApp } from "firebase/app";
+import { getFirestore, collection, getDocs, query, where, deleteDoc } from 'firebase/firestore';
 
-// Replace the following path with the correct path to your key.json file
-const serviceAccount = require("./key.json");
+const firebaseConfig = {
+  apiKey: "AIzaSyBAWySZuXFEJVCxLr-AzX4AvYFhAb0eNrY",
+  authDomain: "hall-allocation-c720d.firebaseapp.com",
+  projectId: "hall-allocation-c720d",
+  storageBucket: "hall-allocation-c720d.appspot.com",
+  messagingSenderId: "791800414601",
+  appId: "1:791800414601:web:62b5aa8a208e925f666158",
+  measurementId: "G-GG773MRH0F"
+};
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://hall-allocation-c720d.firebaseio.com",
-});
+(async () => {
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-const now = new Date();
+  try {
+    const now = new Date();
 
-// Reference to the "bookings" collection in Firestore
-const db = admin.firestore();
-const bookingsRef = db.collection("bookings");
+    // Reference to the "bookings" collection in Firestore
+    const bookingsCollection = collection(db, 'bookings');
+    const bookingsQuery = query(bookingsCollection);
 
-console.log("Cleanup function started at", now.toISOString());
+    // Get all bookings
+    const snapshot = await getDocs(bookingsQuery);
 
-// Create a query for all bookings
-const allBookingsQuery = bookingsRef;
-
-// Perform the query
-allBookingsQuery.get()
-  .then((bookingsSnapshot) => {
-    // Delete only the expired bookings
-    const batch = db.batch();
-    let skippedCount = 0;
     let deletedCount = 0;
+    let skippedCount = 0;
 
-    bookingsSnapshot.forEach((doc) => {
-      const bookingEndTime = new Date(doc.data().date + "T" + doc.data().endTime);
+    snapshot.forEach(async (doc) => {
+      const booking = doc.data();
+      const bookingEndTime = new Date(booking.date + "T" + booking.endTime);
+
       if (bookingEndTime <= now) {
-        batch.delete(doc.ref);
+        // Delete expired booking
+        await deleteDoc(doc.ref);
         console.log("Deleted expired booking:", doc.id);
         deletedCount++;
       } else {
@@ -40,13 +45,11 @@ allBookingsQuery.get()
     });
 
     if (deletedCount > 0) {
-      return batch.commit().then(() => {
-        console.log("Expired bookings cleaned up successfully.");
-      });
+      console.log("Expired bookings cleaned up successfully.");
     } else if (skippedCount > 0) {
       console.log("No expired bookings found.");
     }
-  })
-  .catch((error) => {
+  } catch (error) {
     console.error("Error cleaning up expired bookings:", error);
-  });
+  }
+})();
