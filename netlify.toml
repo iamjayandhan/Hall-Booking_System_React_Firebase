@@ -1,6 +1,3 @@
-[build]
-  functions = "netlify/functions"
-
 [scheduled.functions]
   [scheduled.functions.cleanup]
     schedule = "*/2 * * * *"
