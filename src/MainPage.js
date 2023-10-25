@@ -84,18 +84,10 @@ const MainPage = () => {
       bookingsCollectionRef,
       where('hallId', '==', selectedHall.id),
       where('date', '==', bookingDate),
-      where('startTime', '<', bookingTimeTo), // New logic: Check if the new booking's end time is after the existing booking's start time
-      where('endTime', '>', bookingTimeFrom)
     );
   
     const querySnapshot = await getDocs(hallQuery);
   
-      
-    if (!querySnapshot.empty) {
-      alert('This hall is already booked for the selected time. Please choose another time.');
-      return;
-    }
-    
     // Check for time conflicts with the new booking
     const conflicts = querySnapshot.docs.some((doc) => {
       const booking = doc.data();
