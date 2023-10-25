@@ -1,0 +1,60 @@
+/* Add this CSS to a separate CSS file or directly in your component */
+
+.button1
+{
+    padding: 10px 20px;
+    background-color: #176B87;
+    color: #fff;
+    border-radius: 5px;
+    width: 150px;
+    margin: 0px; /* Center the button horizontally within the container */
+    text-align: center;
+    margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center; 
+  font-size: large;
+  /* cursor: pointer; */
+}
+
+.button1:hover {
+    background-color: rgb(4, 60, 120);
+  }
+  
+/* Style the table */
+table {
+    width: 150vh;
+    height: 100%; /* Full viewport height */
+    margin: 0;
+    font-family: Arial, sans-serif;
+    font-size: 18px; /* Increase font size */
+    border-collapse: collapse;
+  }
+  
+  /* Style the table header */
+  th {
+    background-color: #f2f2f2;
+    text-align: left;
+    padding: 12px; /* Increase header padding */
+    border: 1px solid black;
+    color: black;
+  }
+  
+  /* Style the table data cells */
+  td {
+    border: 1px solid black;
+    padding: 12px; /* Increase cell padding */
+    background: #176B87;
+    color: white;
+  }
+  
+  /* Style alternate rows with a different background color */
+  tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+  
+  /* Hover effect on rows */
+  tr:hover {
+    background-color: #176B87;
+  }
+  

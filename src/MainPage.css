@@ -6,36 +6,49 @@
 }
 .MainPage {
   font-family: Arial, sans-serif;
-  background: f0f0f0;
+  background: #64CCC5;
   padding: 20px;
   text-align: center;
 }
 
 h1 {
-  color: #333;
+  color: #fff;
 }
+
 
 .type-selector {
   margin: 20px 0;
+  display: flex;
+  justify-content: space-between;
+  margin: 0;
+  max-width: 20rem;
 }
-.button-container {
-  text-align: center; /* Center the button horizontally */
+.buttons-container {
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px; 
 }
+
 
 .button {
   padding: 10px 20px;
-  background-color: #007bff;
+  background-color: #176B87;
   color: #fff;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   width: 150px; /* Set a fixed width for the button */
   margin: 0 auto; /* Center the button horizontally within the container */
-  margin-top: 1rem;
+  margin-bottom: 1rem;
+  margin-right: 2rem;
+  margin-top: 2rem;
+  font-size: large;
 }
 
 .button:hover {
-  background-color: #0056b3;
+  background-color: rgb(4, 60, 120);
 }
 
 
@@ -47,7 +60,7 @@ h1 {
 }
 
 .hall-card {
-  background-color: #fff;
+  background-color: #DAFFFB;
   border: 1px solid #ddd;
   border-radius: 5px;
   padding: 20px;
@@ -61,21 +74,23 @@ h1 {
 }
 
 .view-button {
-  background-color: #007bff;
+  background-color: #176B87;
   color: #fff;
   border: none;
   border-radius: 5px;
   padding: 10px 20px;
   margin-top: 10px;
   cursor: pointer;
+  font-size: large;
+  max-width: 8rem;
 }
 
 .view-button:hover {
-  background-color: #0056b3;
+  background-color: rgb(4, 60, 120);
 }
 
 .booking-modal {
-  background-color: #fff;
+  background-color: #DAFFFB;
   border: 1px solid #ddd;
   border-radius: 5px;
   padding: 20px;
@@ -108,7 +123,7 @@ input {
 
 button[type="button"] {
   padding: 10px 20px;
-  background-color: #007bff;
+  background-color: #176B87;
   color: #fff;
   border: none;
   border-radius: 5px;
@@ -120,5 +135,5 @@ button[type="button"] {
 }
 
 button[type="button"]:hover {
-  background-color: #0056b3;
+  background-color: rgb(4, 60, 120);
 }

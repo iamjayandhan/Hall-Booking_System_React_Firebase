@@ -3,8 +3,15 @@
   import { db } from './firebase';
   import { addDoc,collection, getDocs, query, where } from 'firebase/firestore';
   import { cleanupExpiredBookings } from './cleanup';
+  import { Link } from 'react-router-dom';
+  import Cookies from 'js-cookie'; // Import the Cookies library
+
 
   const MainPage = () => {
+    const username = Cookies.get('username');
+
+
+    
     const handleRefresh = async () => {
       try {
         await cleanupExpiredBookings(); // Call the cleanup function
@@ -15,6 +22,14 @@
       }
     };
     
+    const handleLogout = () => {
+      // Delete the username cookie
+      Cookies.remove('username');
+  
+      // Navigate to the Login page
+      window.location.href = '/login'; // You can replace with your actual Login page route
+    };
+
     const [selectedType, setSelectedType] = useState('hall'); // Default to hall
     const [hallAndLabDetails] = useState([
       {
@@ -80,13 +95,15 @@
         return;
       }
     
-    
+      // const loggedInUser = userName || 'Unknown User';
+
       const newBooking = {
-        hallId: selectedHall.id,
+        hallName: selectedHall.name,
         date: bookingDate,
         startTime: bookingTimeFrom,
         endTime: bookingTimeTo,
         username: bookingUsername,
+        loggedin: username,
       };
     
       const bookingsCollectionRef = collection(db, 'bookings');
@@ -143,37 +160,37 @@
     return (
       <div className="Main">
       <div className="MainPage">
-        <h1>All {selectedType === 'hall' ? 'Hall' : 'Lab'} Details</h1>
-        <div className="type-selector">
-        <div className="button-container"><button className="button" onClick={() => setSelectedType('hall')}>Select Hall</button></div>
-        <div className="button-container"><button className="button" onClick={() => setSelectedType('lab')}>Select Lab</button></div>
-        </div>
-        <div className="hall-cards">
-          {hallAndLabDetails
-            .find((item) => item.type === selectedType)
-            .data.map((hall) => (
-              <div className="hall-card" key={hall.id}>
-                <h2>{hall.name}</h2>
-                <p>Venue: {hall.venue}</p>
-                <p>Seating Capacity: {hall.seating}</p>
-                <button
-                  className="view-button"
-                  onClick={() => openBookingModal(hall)}
-                >
-                  Book Now
-                </button>
-              </div>
-            ))}
-        </div>
         
-        {/* Refresh Button */}
+        <h1>Welcome, {username}!</h1>
 
         <div className="button-container">
+
+        {/* <div className="type-selector"> */}
+        <button className="button" onClick={() => setSelectedType('hall')}>Hall</button>
+        <button className="button" onClick={() => setSelectedType('lab')}>Lab</button>
+        {/* </div> */}
+
         <button className="button" onClick={handleRefresh}>Refresh</button>
+  
+        <Link to="/ViewAllBookings">
+          <button className="button" style={{ width: '200px' }}>View All Bookings</button>
+        </Link>
+
+        
+        <Link to={{ pathname: '/MyBookings', state: { username } }}>
+         <button className="button">My Bookings</button>
+        </Link>
+      
+        <button className="button" onClick={handleLogout}>Logout</button>
+
         </div>
 
-        {/* Booking Modal */}
-        {isBookingModalVisible && (
+        <h1>Available {selectedType === 'hall' ? 'Hall' : 'Lab'} Details</h1>
+
+        
+
+                {/* Booking Modal */}
+                {isBookingModalVisible && (
           <div className="booking-modal">
             <h2>Book {selectedType === 'hall' ? 'Hall' : 'Lab'}</h2>
             <form>
@@ -202,7 +219,7 @@
                 />
               </div>
               <div className="form-group">
-                <label>Username:</label>
+                <label>Handler:</label>
                 <input
                   type="text"
                   value={bookingUsername}
@@ -218,6 +235,28 @@
             </form>
           </div>
         )}
+
+        <div className="hall-cards">
+          {hallAndLabDetails
+            .find((item) => item.type === selectedType)
+            .data.map((hall) => (
+              <div className="hall-card" key={hall.id}>
+                <h2>{hall.name}</h2>
+                <p>Venue: {hall.venue}</p>
+                <p>Seating Capacity: {hall.seating}</p>
+                <button
+                  className="view-button"
+                  onClick={() => openBookingModal(hall)}
+                >
+                  Book Now
+                </button>
+              </div>
+            ))}
+        </div>
+        
+        {/* Refresh Button */}
+
+        
         </div>
         </div>
     );

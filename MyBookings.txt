@@ -1,0 +1,108 @@
+import React, { useState, useEffect } from 'react';
+import { collection, query, where, getDocs, updateDoc, doc } from 'firebase/firestore';
+import { db } from './firebase';
+import { Link } from 'react-router-dom';
+import Cookies from 'js-cookie'; // Import Cookies
+
+const MyBookings = () => {
+  const [bookings, setBookings] = useState([]);
+  const [editingBooking, setEditingBooking] = useState(null);
+  const [updatedBooking, setUpdatedBooking] = useState(null);
+
+  // Access the username from the cookie
+  const username = Cookies.get('username');
+
+  useEffect(() => {
+    if (username) {
+      // Fetch bookings for the logged-in user
+      const fetchMyBookings = async () => {
+        try {
+          const bookingsCollectionRef = collection(db, 'bookings');
+          const myBookingsQuery = query(bookingsCollectionRef, where('loggedin', '==', username));
+          const querySnapshot = await getDocs(myBookingsQuery);
+
+          const myBookings = [];
+          querySnapshot.forEach((doc) => {
+            myBookings.push({ id: doc.id, ...doc.data() });
+          });
+
+          setBookings(myBookings);
+        } catch (error) {
+          console.error('Error fetching user bookings:', error);
+        }
+      };
+
+      fetchMyBookings();
+    }
+  }, [username]);
+
+  const handleEditBooking = (booking) => {
+    setEditingBooking(booking);
+    setUpdatedBooking({ ...booking }); // Initialize with the selected booking data
+  };
+
+  const handleUpdateBooking = async () => {
+    try {
+      const bookingDocRef = doc(db, 'bookings', editingBooking.id);
+      await updateDoc(bookingDocRef, updatedBooking);
+
+      setBookings((bookings) =>
+        bookings.map((booking) =>
+          booking.id === editingBooking.id ? { ...booking, ...updatedBooking } : booking
+        )
+      );
+
+      setEditingBooking(null);
+      setUpdatedBooking(null);
+    } catch (error) {
+      console.error('Error updating booking:', error);
+    }
+  };
+
+  return (
+    <div>
+      <h1>My Bookings for {username}</h1>
+      <ul>
+        {bookings.map((booking) => (
+          <li key={booking.id}>
+            {booking.hallName} - {booking.date} - {booking.startTime} to {booking.endTime}
+            {editingBooking && editingBooking.id === booking.id ? (
+              <>
+                <input
+                  type="text"
+                  value={updatedBooking.hallName}
+                  onChange={(e) => setUpdatedBooking({ ...updatedBooking, hallName: e.target.value })}
+                />
+                <input
+                  type="date"
+                  value={updatedBooking.date}
+                  onChange={(e) => setUpdatedBooking({ ...updatedBooking, date: e.target.value })}
+                />
+                <input
+                  type="time"
+                  value={updatedBooking.startTime}
+                  onChange={(e) =>
+                    setUpdatedBooking({ ...updatedBooking, startTime: e.target.value })
+                  }
+                />
+                <input
+                  type="time"
+                  value={updatedBooking.endTime}
+                  onChange={(e) => setUpdatedBooking({ ...updatedBooking, endTime: e.target.value })}
+                />
+                <button onClick={handleUpdateBooking}>Save</button>
+              </>
+            ) : (
+              <button onClick={() => handleEditBooking(booking)}>Edit</button>
+            )}
+          </li>
+        ))}
+      </ul>
+      <Link to="/MainPage">
+        <button className="button1">Back</button>
+      </Link>
+    </div>
+  );
+};
+
+export default MyBookings;

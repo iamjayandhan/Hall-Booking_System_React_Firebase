@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from './firebase';
+import Cookies from 'js-cookie';
+
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -25,11 +27,16 @@ const Login = () => {
 
         if (userDoc.password === password) {
           setLoginMessage('Authenticating...');
+          Cookies.set('username', username);
 
           // Simulate a delay of 3 seconds before navigating to MainPage.js
           setTimeout(() => {
             setLoginMessage('');
-            navigate('/MainPage');
+            
+            // navigate('/MainPage');
+            // Inside the handleLogin function after successful authentication:
+            navigate('/MainPage', { state: { username } });
+
           }, 3000);
         } else {
           setLoginMessage('Invalid credentials, please try again.');
