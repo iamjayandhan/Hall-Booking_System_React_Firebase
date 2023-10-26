@@ -8,6 +8,8 @@ const MyBookings = () => {
   const [bookings, setBookings] = useState([]);
   const [editingBooking, setEditingBooking] = useState(null);
   const [updatedBooking, setUpdatedBooking] = useState(null);
+  const [sortByDate, setSortByDate] = useState(false);
+  const [sortByStartTime, setSortByStartTime] = useState(false);
 
   const username = Cookies.get('username');
 
@@ -24,6 +26,18 @@ const MyBookings = () => {
             myBookings.push({ id: doc.id, ...doc.data() });
           });
 
+          myBookings.sort((a, b) => {
+            const dateTimeA = new Date(`${a.date}T${a.startTime}`);
+            const dateTimeB = new Date(`${b.date}T${b.startTime}`);
+
+            if (dateTimeA < dateTimeB) return -1;
+            if (dateTimeA > dateTimeB) return 1;
+
+            if (a.creationOrder < b.creationOrder) return -1;
+            if (a.creationOrder > b.creationOrder) return 1;
+            return 0;
+          });
+
           setBookings(myBookings);
         } catch (error) {
           console.error('Error fetching user bookings:', error);
@@ -36,7 +50,7 @@ const MyBookings = () => {
 
   const handleEditBooking = (booking) => {
     setEditingBooking(booking);
-    setUpdatedBooking({ ...booking }); // Initialize with the selected booking data
+    setUpdatedBooking({ ...booking });
   };
 
   const handleUpdateBooking = async () => {
@@ -61,19 +75,43 @@ const MyBookings = () => {
 
   const handleCancelBooking = async (bookingId) => {
     const confirmation = window.confirm('Are you sure you want to cancel this booking?');
-  
+
     if (confirmation) {
       try {
         const bookingDocRef = doc(db, 'bookings', bookingId);
         await deleteDoc(bookingDocRef);
-  
+
         setBookings((bookings) => bookings.filter((booking) => booking.id !== bookingId));
       } catch (error) {
         console.error('Error canceling booking:', error);
       }
     }
   };
-  
+
+  const sortBookingsByDate = () => {
+    const sortedBookings = [...bookings];
+    sortedBookings.sort((a, b) => {
+      const dateA = new Date(a.date);
+      const dateB = new Date(b.date);
+      return sortByDate ? dateA - dateB : dateB - dateA;
+    });
+    setSortByDate(!sortByDate);
+    setBookings(sortedBookings);
+  };
+
+  const sortBookingsByStartTime = () => {
+    const sortedBookings = [...bookings];
+    sortedBookings.sort((a, b) => {
+      const timeA = new Date(`1970-01-01T${a.startTime}`);
+      const timeB = new Date(`1970-01-01T${b.startTime}`);
+      return sortByStartTime ? timeA - timeB : timeB - timeA;
+    });
+    setSortByStartTime(!sortByStartTime);
+    setBookings(sortedBookings);
+  };
+
+  const currentdate = new Date().toISOString().split('T')[0];
+
 
   return (
     <div>
@@ -82,8 +120,18 @@ const MyBookings = () => {
         <thead>
           <tr>
             <th>Hall Name</th>
-            <th>Date</th>
-            <th>Start Time</th>
+            <th>
+              Date
+              <button onClick={sortBookingsByDate}>
+                {sortByDate ? '▼' : '▲'}
+              </button>
+            </th>
+            <th>
+              Start Time
+              <button onClick={sortBookingsByStartTime}>
+                {sortByStartTime ? '▼' : '▲'}
+              </button>
+            </th>
             <th>End Time</th>
             <th>Edit</th>
             <th>Cancel</th>
@@ -98,6 +146,7 @@ const MyBookings = () => {
                   <input
                     type="date"
                     value={updatedBooking.date}
+                    min={currentdate}
                     onChange={(e) =>
                       setUpdatedBooking({ ...updatedBooking, date: e.target.value })
                     }

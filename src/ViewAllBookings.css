@@ -57,4 +57,30 @@ table {
   tr:hover {
     background-color: #176B87;
   }
+
   
+
+table th button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  margin-left: 5px;
+  outline: none;
+  padding: 0;
+  width: 1rem;
+}
+
+table th button:hover {
+  text-decoration: underline;
+}
+
+/* Style for the up arrow */
+table th button.up-arrow::after {
+  content: "▲";
+}
+
+/* Style for the down arrow */
+table th button.down-arrow::after {
+  content: "▼";
+}

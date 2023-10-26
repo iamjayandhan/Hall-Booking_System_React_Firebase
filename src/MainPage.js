@@ -89,21 +89,26 @@
       setBookingModalVisible(false);
     };
 
+
     const handleBookNow = async () => {
       if (!selectedHall || !bookingDate || !bookingTimeFrom || !bookingTimeTo || !bookingUsername) {
         alert('Please fill in all booking details.');
         return;
       }
     
-      // const loggedInUser = userName || 'Unknown User';
+      if (username === bookingUsername) {
+        alert('You cannot make the same booking as the currently logged-in user.');
+        return;
+      }
 
+    
       const newBooking = {
         hallName: selectedHall.name,
         date: bookingDate,
         startTime: bookingTimeFrom,
         endTime: bookingTimeTo,
         username: bookingUsername,
-        loggedin: username,
+        loggedin: username, // User currently logged in
       };
     
       const bookingsCollectionRef = collection(db, 'bookings');
@@ -111,15 +116,17 @@
       // Check if the selected hall is already booked for the same date
       const hallQuery = query(
         bookingsCollectionRef,
-        where('hallId', '==', selectedHall.id),
+        where('hallName', '==', selectedHall.name),
         where('date', '==', bookingDate),
       );
     
       const querySnapshot = await getDocs(hallQuery);
     
-      // Check for time conflicts with the new booking
+      // Check for conflicts with the new booking
       const conflicts = querySnapshot.docs.some((doc) => {
         const booking = doc.data();
+
+        
         const startConflict = (
           booking.startTime <= bookingTimeFrom &&
           booking.endTime >= bookingTimeFrom
@@ -128,32 +135,33 @@
           booking.startTime <= bookingTimeTo &&
           booking.endTime >= bookingTimeTo
         );
+    
         if (startConflict || endConflict) {
-          return true;
+          alert('This hall is already booked for the selected time. Please choose another time.');
+          return true; // Conflict
         }
-        return false;
+    
+        return false; // No conflict
       });
     
-      if (conflicts) {
-        alert('This hall is already booked for the selected time. Please choose another time.');
-        return;
-      }
-    
-      // Add the new booking to Firestore
-      try {
-        await addDoc(bookingsCollectionRef, newBooking);
-        alert('Booking successfully added to Firestore!');
-        setBookingDate('');
-        setBookingTimeFrom('');
-        setBookingTimeTo('');
-        setBookingUsername('');
-        setBookingModalVisible(false);
-      } catch (error) {
-        console.error('Error adding booking to Firestore: ', error);
-        alert('Failed to add the booking. Please try again later.');
+      if (!conflicts) {
+        try {
+          await addDoc(bookingsCollectionRef, newBooking);
+          alert('Booking successfully added to Firestore!');
+          setBookingDate('');
+          setBookingTimeFrom('');
+          setBookingTimeTo('');
+          setBookingUsername('');
+          setBookingModalVisible(false);
+        } catch (error) {
+          console.error('Error adding booking to Firestore: ', error);
+          alert('Failed to add the booking. Please try again later.');
+        }
       }
     };
     
+    
+    const currentdate = new Date().toISOString().split('T')[0];
     
     
 
@@ -199,6 +207,7 @@
                 <input
                   type="date"
                   value={bookingDate}
+                  min={currentdate}
                   onChange={(e) => setBookingDate(e.target.value)}
                 />
               </div>

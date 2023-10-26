@@ -171,6 +171,7 @@ button {
   margin-bottom: 15px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  background-color: #DAFFFB;
 }
 
 /* Style for the "Check Availability" button */
