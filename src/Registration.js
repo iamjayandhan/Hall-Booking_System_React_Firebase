@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
 import { db } from './firebase';
 import './index.css';
+import Cookies from 'js-cookie';
 
 const Registration = () => {
   const [username, setUsername] = useState('');
@@ -31,12 +32,14 @@ const Registration = () => {
         password,
       });
 
-      setRegistrationMessage('Registration successful! You can now proceed to login. Processing...');
+      Cookies.set('username', username);
+
+      setRegistrationMessage('Registration successful! Redirecting...');
       setUsername('');
       setPassword('');
 
       setTimeout(() => {
-        navigate('/login');
+        navigate('/MainPage');
       }, 3000);
     } catch (error) {
       console.error('Error during registration:', error);

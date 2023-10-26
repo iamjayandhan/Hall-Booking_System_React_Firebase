@@ -1,4 +1,4 @@
-  import React, { useState } from 'react';
+  import React, { useState,useEffect } from 'react';
   import './MainPage.css';
   import { db } from './firebase';
   import { addDoc,collection, getDocs, query, where } from 'firebase/firestore';
@@ -9,9 +9,7 @@
 
   const MainPage = () => {
     const username = Cookies.get('username');
-
-
-    
+        
     const handleRefresh = async () => {
       try {
         await cleanupExpiredBookings(); // Call the cleanup function
@@ -96,8 +94,14 @@
         return;
       }
     
-      if (username === bookingUsername) {
-        alert('You cannot make the same booking as the currently logged-in user.');
+      // if (username === bookingUsername) {
+      //   alert('You cannot make the same booking as the currently logged-in user.');
+      //   return;
+      // }
+
+      // Check if endTime is less than or equal to startTime
+      if (bookingTimeTo <= bookingTimeFrom) {
+        alert('End time cannot be earlier than or equal to the start time.');
         return;
       }
 
@@ -219,6 +223,10 @@
                   onChange={(e) => setBookingTimeFrom(e.target.value)}
                 />
               </div>
+
+
+
+
               <div className="form-group">
                 <label>Time To:</label>
                 <input
