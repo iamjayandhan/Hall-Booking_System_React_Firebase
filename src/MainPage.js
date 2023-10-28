@@ -261,7 +261,7 @@
         <button className="button" onClick={() => setSelectedType('lab')}>Lab</button>
         {/* </div> */}
 
-        <button className="button" onClick={handleRefresh}>Refresh</button>
+        <button className="button" onClick={handleRefresh} style={{ marginBottom: '0px'}}>Refresh</button>
   
         <Link to="/ViewAllBookings">
           <button className="button3">View All Bookings</button>

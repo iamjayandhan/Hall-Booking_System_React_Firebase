@@ -106,7 +106,9 @@ table th button.down-arrow::after {
   }
 
   th, td {
-    padding: 18px; /* Reduce cell padding for mobile view */
+    padding: 0.5px; /* Reduce cell padding for mobile view */
+    text-align: center; /* Center the text in the table cells */
+    line-height: 1.6; /* Adjust the line-height for spacing above and below the text */
   }
 
   /* Remove the sort buttons to save space on small screens */
@@ -116,7 +118,7 @@ table th button.down-arrow::after {
 
   /* Center the "Back" button */
   .button1 {
-    width: 10%;
+    width: 20%;
     margin: 10px auto; /* Center the button horizontally */
   }
 }
