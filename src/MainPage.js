@@ -252,7 +252,7 @@
       <div className="Main">
       <div className="MainPage">
         
-        <h1>Welcome, {username}!</h1>
+        <h1 className="greet">Welcome, {username}!</h1>
 
         <div className="button-container">
 
@@ -264,7 +264,7 @@
         <button className="button" onClick={handleRefresh}>Refresh</button>
   
         <Link to="/ViewAllBookings">
-          <button className="button" style={{ width: '200px' }}>View All Bookings</button>
+          <button className="button3">View All Bookings</button>
         </Link>
 
         

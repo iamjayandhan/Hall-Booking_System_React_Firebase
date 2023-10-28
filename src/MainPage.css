@@ -47,6 +47,21 @@ h1 {
   font-size: large;
 }
 
+.button3 {
+  padding: 10px 20px;
+  background-color: #176B87;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 200px; 
+  margin: 0 auto; /* Center the button horizontally within the container */
+  margin-bottom: 1rem;
+  margin-right: 2rem;
+  margin-top: 2rem;
+  font-size: large;
+}
+
 .button:hover {
   background-color: rgb(4, 60, 120);
 }
@@ -65,6 +80,7 @@ h1 {
   border-radius: 5px;
   padding: 20px;
   width: 300px;
+  height: 205px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
   position: relative;
@@ -155,50 +171,54 @@ button[type="button"]:hover {
   max-width: 4rem;
 }
 
+.greet{
+  margin-bottom: 3rem;
+}
 
 
-
-
-
-/* MainPage.css */
-
-/* Add a media query for screens with a maximum width of 768px (typical for smartphones) */
 @media (max-width: 768px) {
-  .Main {
-    max-width: 100%; /* Allow the content to take the full width of the screen */
-    max-height: 100%; /* Allow the content to take the full height of the screen */
-  }
+  /* Adjust styles for screens with a maximum width of 768px or smaller */
 
   .MainPage {
-    padding: 10px; /* Reduce the padding */
+    padding: 10px; /* Reduce padding for smaller screens */
   }
 
   h1 {
-    font-size: 24px; /* Reduce the font size for better mobile readability */
-    margin-bottom: 10px;
+    font-size: 24px; /* Adjust font size for smaller screens */
+    margin-bottom: 10px; /* Reduce margin for tighter look */
   }
 
-  .button {
-    width: 100%; /* Allow the buttons to take full width */
-    margin: 10px 0; /* Add spacing between buttons */
+  .type-selector {
+    max-width: 100%; /* Adjust to full width */
+  }
+
+  .button,.button3 {
+    padding: 10px 20px;
+    font-size: 16px; /* Slightly smaller font for readability on small screens */
+    width: 6rem; 
+    margin-top:0px;
   }
 
   .hall-card {
-    width: 90%; /* Make the cards nearly full-width on smaller screens */
+    padding: 10px; /* Reduce padding for small screens */
+    width: 25%; /* Adjust card width to full width */
+    height: 100%;
+    margin-bottom: 0px;
+  }
+  .view-button {
+    padding: 10px 20px;
+    margin-top: 0px;
+    font-size: small;
+    max-width: 7rem;
+  }
+  .hall-card h2{
+    margin-top: 1.7rem;
   }
 
-  .view-button,
-  .copy-button {
-    width: 100%; /* Allow buttons to take full width */
+  .p{
+    margin-bottom: 0px;
   }
-
-  .booking-modal {
-    width: 90%; /* Make the modal almost full-width */
-  }
-
-  input[type="text"] {
-    width: 100%; /* Allow the search input to take full width */
-  }
-
-  /* Add more styles as needed for a better mobile experience */
 }
+
+
+

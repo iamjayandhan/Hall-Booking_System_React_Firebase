@@ -84,3 +84,48 @@ table th button.up-arrow::after {
 table th button.down-arrow::after {
   content: "▼";
 }
+
+
+
+
+
+
+/* Add these styles to your existing CSS */
+
+/* Media query for mobile devices */
+/* Media query for mobile devices */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 24px;
+  }
+
+  /* Center the table */
+  table {
+    width: 50%;
+    margin: 0 auto; /* Center the table horizontally */
+  }
+
+  th, td {
+    padding: 18px; /* Reduce cell padding for mobile view */
+  }
+
+  /* Remove the sort buttons to save space on small screens */
+  th button {
+    display: none;
+  }
+
+  /* Center the "Back" button */
+  .button1 {
+    width: 10%;
+    margin: 10px auto; /* Center the button horizontally */
+  }
+}
+
+
+/* Media query for smaller mobile devices */
+@media (max-width: 480px) {
+  /* Further adjustments for smaller screens */
+  table {
+    width: 90%;
+  }
+}
