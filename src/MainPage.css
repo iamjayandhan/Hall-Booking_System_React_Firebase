@@ -154,3 +154,51 @@ button[type="button"]:hover {
   cursor: pointer;
   max-width: 4rem;
 }
+
+
+
+
+
+
+/* MainPage.css */
+
+/* Add a media query for screens with a maximum width of 768px (typical for smartphones) */
+@media (max-width: 768px) {
+  .Main {
+    max-width: 100%; /* Allow the content to take the full width of the screen */
+    max-height: 100%; /* Allow the content to take the full height of the screen */
+  }
+
+  .MainPage {
+    padding: 10px; /* Reduce the padding */
+  }
+
+  h1 {
+    font-size: 24px; /* Reduce the font size for better mobile readability */
+    margin-bottom: 10px;
+  }
+
+  .button {
+    width: 100%; /* Allow the buttons to take full width */
+    margin: 10px 0; /* Add spacing between buttons */
+  }
+
+  .hall-card {
+    width: 90%; /* Make the cards nearly full-width on smaller screens */
+  }
+
+  .view-button,
+  .copy-button {
+    width: 100%; /* Allow buttons to take full width */
+  }
+
+  .booking-modal {
+    width: 90%; /* Make the modal almost full-width */
+  }
+
+  input[type="text"] {
+    width: 100%; /* Allow the search input to take full width */
+  }
+
+  /* Add more styles as needed for a better mobile experience */
+}

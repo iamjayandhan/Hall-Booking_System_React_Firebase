@@ -39,10 +39,10 @@ const Login = () => {
 
           }, 3000);
         } else {
-          setLoginMessage('Invalid credentials, please try again.');
+          setLoginMessage('Invalid credentials. please try again.');
         }
       } else {
-        setLoginMessage('Invalid credentials, please try again.');
+        setLoginMessage('Invalid credentials or user not registered. please try again.');
       }
     } catch (error) {
       console.error('Error during login:', error);

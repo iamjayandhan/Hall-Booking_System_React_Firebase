@@ -5,10 +5,46 @@
   import { cleanupExpiredBookings } from './cleanup';
   import { Link } from 'react-router-dom';
   import Cookies from 'js-cookie'; // Import the Cookies library
+  import { debounce } from 'lodash'; // Import the debounce function from the lodash library
+
 
 
   const MainPage = () => {
     const username = Cookies.get('username');
+
+
+
+
+    const [searchInput, setSearchInput] = useState('');
+    const [filteredHalls, setFilteredHalls] = useState([]);
+
+    // Define a debounced version of the filterHalls function
+      const debouncedFilterHalls = debounce((lowercaseSearch) => {
+        const hallsToDisplay = hallAndLabDetails
+          .find((item) => item.type === selectedType)
+          .data.filter((hall) => {
+            // Check if the hall name, venue, or seating capacity contains the search input
+            return (
+              hall.name.toLowerCase().includes(lowercaseSearch) ||
+              hall.venue.toLowerCase().includes(lowercaseSearch) ||
+              hall.seating.toString().includes(searchInput)
+            );
+          });
+        setFilteredHalls(hallsToDisplay);
+      }, 300); // Adjust the debounce delay as needed (e.g., 300 milliseconds)
+
+      // Modify the search input onChange event to call the debounced function
+      const handleSearchInputChange = (e) => {
+        const lowercaseSearch = e.target.value.toLowerCase();
+        setSearchInput(lowercaseSearch);
+        debouncedFilterHalls(lowercaseSearch);
+      };
+
+
+    
+
+
+
         
     const handleRefresh = async () => {
       try {
@@ -242,7 +278,19 @@
 
         <h1>Available {selectedType === 'hall' ? 'Hall' : 'Lab'} Details</h1>
 
-        
+
+
+
+
+        <input
+          type="text"
+          placeholder="Search..."
+          value={searchInput}
+          onChange={(e) => {handleSearchInputChange(e)}}
+          style={{ width: '15rem' }}
+        />
+
+
 
                 {/* Booking Modal */}
                 {isBookingModalVisible && (
@@ -297,9 +345,12 @@
         )}
 
         <div className="hall-cards">
-          {hallAndLabDetails
-            .find((item) => item.type === selectedType)
-            .data.map((hall) => (
+
+
+          {(searchInput === ''
+            ? hallAndLabDetails.find((item) => item.type === selectedType).data
+            : filteredHalls
+          ).map((hall) => (
               <div className="hall-card" key={hall.id}>
                 <h2>{hall.name}</h2>
                 <p>Venue: {hall.venue}</p>

@@ -77,7 +77,7 @@ const ViewAllBookings = () => {
 
 
             <th>End Time</th>
-            <th>Username</th>
+            <th>Handler Name</th>
           </tr>
         </thead>
         <tbody>
