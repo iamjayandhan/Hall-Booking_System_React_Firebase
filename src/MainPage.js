@@ -20,6 +20,49 @@
       }
     };
     
+
+    const copyToClipboard = (e, hall) => {
+      e.preventDefault(); // Prevent the default button behavior (form submission, etc.)
+    
+      const textToCopy = `Hall Name: ${hall.name}\nVenue: ${hall.venue}\nSeating Capacity: ${hall.seating}`;
+    
+      const copyButton = e.currentTarget; // Reference to the clicked button
+      const originalButtonText = copyButton.textContent;
+    
+      // Check if the Clipboard API is available
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(textToCopy)
+          .then(() => {
+            copyButton.textContent = "Copied!";
+            setTimeout(() => {
+              copyButton.textContent = originalButtonText;
+            }, 2000); // Revert back to "Copy" after 2 seconds
+          })
+          .catch((error) => {
+            console.error('Failed to copy to clipboard:', error);
+          });
+      } else {
+        // Fallback for browsers that do not support Clipboard API
+        try {
+          const textArea = document.createElement('textarea');
+          textArea.value = textToCopy;
+          document.body.appendChild(textArea);
+          textArea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textArea);
+          
+          copyButton.textContent = "Copied!";
+          setTimeout(() => {
+            copyButton.textContent = originalButtonText;
+          }, 2000); // Revert back to "Copy" after 2 seconds
+        } catch (error) {
+          console.error('Copying to clipboard is not supported:', error);
+        }
+      }
+    };
+    
+
+
     const handleLogout = () => {
       // Delete the username cookie
       Cookies.remove('username');
@@ -267,6 +310,18 @@
                 >
                   Book Now
                 </button>
+                
+
+
+                <button
+                className="copy-button"
+                onClick={(e) => copyToClipboard(e,hall)}
+              >
+                Copy
+              </button>
+
+
+
               </div>
             ))}
         </div>

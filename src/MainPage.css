@@ -67,6 +67,7 @@ h1 {
   width: 300px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
+  position: relative;
 }
 
 .hall-card h2 {
@@ -137,4 +138,19 @@ button[type="button"] {
 
 button[type="button"]:hover {
   background-color: rgb(4, 60, 120);
+}
+
+
+
+
+.copy-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: #176B87;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  max-width: 4rem;
 }
