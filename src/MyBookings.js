@@ -53,21 +53,77 @@ const MyBookings = () => {
     setUpdatedBooking({ ...booking });
   };
 
+  // const handleUpdateBooking = async () => {
+  //   try {
+  //     const bookingDocRef = doc(db, 'bookings', editingBooking.id);
+  //     const { hallName, date, startTime, endTime } = updatedBooking;
+
+  //     await updateDoc(bookingDocRef, { hallName, date, startTime, endTime });
+
+  //     setBookings((bookings) =>
+  //       bookings.map((booking) =>
+  //         booking.id === editingBooking.id ? { ...booking, ...updatedBooking } : booking
+  //       )
+  //     );
+
+  //     setEditingBooking(null);
+  //     setUpdatedBooking(null);
+  //   } catch (error) {
+  //     console.error('Error updating booking:', error);
+  //   }
+  // };
   const handleUpdateBooking = async () => {
     try {
-      const bookingDocRef = doc(db, 'bookings', editingBooking.id);
-      const { hallName, date, startTime, endTime } = updatedBooking;
-
-      await updateDoc(bookingDocRef, { hallName, date, startTime, endTime });
-
-      setBookings((bookings) =>
-        bookings.map((booking) =>
-          booking.id === editingBooking.id ? { ...booking, ...updatedBooking } : booking
-        )
-      );
-
+      const updatedBookings = [...bookings];
+      const editingIndex = updatedBookings.findIndex((booking) => booking.id === editingBooking.id);
+  
+      if (editingIndex === -1) {
+        console.error('Editing booking not found.');
+        return;
+      }
+  
+      const updatedBookingCopy = {
+        hallName: updatedBooking.hallName,
+        date: updatedBooking.date,
+        startTime: updatedBooking.startTime,
+        endTime: updatedBooking.endTime,
+      };
+  
+      const hasConflict = updatedBookings.some((booking, index) => {
+        if (index === editingIndex) return false;
+  
+        const editingDateTime = new Date(`${updatedBookingCopy.date}T${updatedBookingCopy.startTime}`);
+        const editingEndDateTime = new Date(`${updatedBookingCopy.date}T${updatedBookingCopy.endTime}`);
+        const existingDateTime = new Date(`${booking.date}T${booking.startTime}`);
+        const existingEndDateTime = new Date(`${booking.date}T${booking.endTime}`);
+  
+        if (
+          editingDateTime < existingEndDateTime &&
+          editingEndDateTime > existingDateTime
+        ) {
+          return true;
+        }
+  
+        return false;
+      });
+  
+      if (hasConflict) {
+        alert('This hall is already booked for the selected time. Please choose another time.');
+        return;
+      }
+  
+      updatedBookings[editingIndex] = updatedBookingCopy;
+      setBookings(updatedBookings);
+  
       setEditingBooking(null);
       setUpdatedBooking(null);
+  
+      const bookingDocRef = doc(db, 'bookings', editingBooking.id);
+      const { hallName, date, startTime, endTime } = updatedBookingCopy;
+  
+      await updateDoc(bookingDocRef, { hallName, date, startTime, endTime });
+  
+      alert('Booking successfully edited!');
     } catch (error) {
       console.error('Error updating booking:', error);
     }
