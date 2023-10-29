@@ -3,12 +3,17 @@ import { Link, useNavigate } from 'react-router-dom';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from './firebase';
 import Cookies from 'js-cookie';
+import eyeOpen from './eye_open.png';
+import eyeClosed from './eye_closed.png';
+
 
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loginMessage, setLoginMessage] = useState('');
+  const [passwordVisible, setPasswordVisible] = useState(false);
+
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -64,13 +69,43 @@ const Login = () => {
         />
         <br />
         <label htmlFor="password">Password:</label>
-        <input
+        {/* <input
           type="password"
           id="password"
           required
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+        /> */}
+
+      <div style={{ position: 'relative' }}>
+        <input
+          type={passwordVisible ? 'text' : 'password'}
+          id="password"
+          required
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
+        <span
+          style={{
+            position: 'absolute',
+            top: '39%',
+            right: '20px',
+            transform: 'translateY(-50%)',
+          }}
+          onClick={() => setPasswordVisible(!passwordVisible)}
+        >
+          <img
+            src={passwordVisible ? eyeOpen : eyeClosed}
+            alt="Toggle Password"
+            style={{
+              maxWidth: '24px',
+              height: 'auto',
+              cursor: 'pointer',
+            }}
+          />
+        </span>
+      </div>
+
         <br />
         <button type="submit">Login</button>
       </form>
