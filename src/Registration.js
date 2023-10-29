@@ -22,13 +22,16 @@ const Registration = () => {
       const querySnapshot = await getDocs(q);
 
       if (!querySnapshot.empty) {
-        setRegistrationMessage('Username already exists. Please choose a different one.');
-        return;
+        const existingUsernames = querySnapshot.docs.map((doc) => doc.data().username);
+        if (existingUsernames.some((u) => u.toLowerCase() === username.toLowerCase())) {
+          setRegistrationMessage('Username already exists. Please choose a different one.');
+          return;
+         }
       }
 
       // If the username is available, add the user to Firestore
       await addDoc(usersCollectionRef, {
-        username,
+        username:username.toLowerCase(),
         password,
       });
 
