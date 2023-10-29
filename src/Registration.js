@@ -4,11 +4,14 @@ import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
 import { db } from './firebase';
 import './index.css';
 import Cookies from 'js-cookie';
+import eyeOpen from './eye_open.png';
+import eyeClosed from './eye_closed.png';
 
 const Registration = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [registrationMessage, setRegistrationMessage] = useState('');
+  const [passwordVisible, setPasswordVisible] = useState(false);
   const navigate = useNavigate();
 
   const handleRegistration = async (e) => {
@@ -64,7 +67,7 @@ const Registration = () => {
         />
         <br />
         <label htmlFor="password">Password:</label>
-        <input
+        {/* <input
           type="password"
           id="password"
           required
@@ -73,7 +76,42 @@ const Registration = () => {
         />
         <br />
         <button type="submit">Register</button>
+      </form> */}
+      <div style={{ position: 'relative' }}>
+          <input
+            type={passwordVisible ? 'text' : 'password'}
+            id="password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <span
+            style={{
+              position: 'absolute',
+              top: '39%',
+              right: '30px',
+              transform: 'translateY(-50%)',
+            }}
+            onClick={() => setPasswordVisible(!passwordVisible)}
+          >
+            <img
+              src={passwordVisible ? eyeOpen : eyeClosed}
+              alt="Toggle Password"
+              style={{
+                maxWidth: '24px',
+                height: 'auto',
+                cursor: 'pointer',
+              }}
+            />
+          </span>
+        </div>
+        <br />
+        <button type="submit" style={{ marginTop:'-20px'}}>Register</button>
       </form>
+
+
+
+
 
       {registrationMessage && <div id="registrationMessage">{registrationMessage}</div>}
 

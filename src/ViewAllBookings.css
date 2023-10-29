@@ -96,7 +96,7 @@ table th button.down-arrow::after {
 /* Media query for mobile devices */
 @media (max-width: 768px) {
   h1 {
-    font-size: 34px;
+    font-size: 24px;
   }
 
   /* Center the table */

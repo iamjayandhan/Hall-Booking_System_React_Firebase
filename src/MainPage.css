@@ -236,11 +236,11 @@ button[type="button"]:hover {
   }
   form{
     max-width:22rem;
-    width: 80%;
+    width: 75%;
+    height: 26%;
   }
-  button[type="button"] {
-    display: inline-block;
-    margin-top: 10px;
+  button[type="submit"] {
+    text-align: center;
   }
 
   .mybooking {

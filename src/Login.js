@@ -99,7 +99,7 @@ const Login = () => {
   return (
     <div className='container'>
       <h1>User Login</h1>
-      <form onSubmit={handleLogin}>
+      <form onSubmit={handleLogin} >
         <label htmlFor="username">Username:</label>
         <input
           type="text"
@@ -149,7 +149,7 @@ const Login = () => {
       </div>
 
         <br />
-        <button type="submit">Login</button>
+        <button type="submit" style={{ marginTop: '-30px' }}>Login</button>
       </form>
 
       {loginMessage && <div id="loginMessage">{loginMessage}</div>}
