@@ -13,34 +13,32 @@ const Registration = () => {
 
   const handleRegistration = async (e) => {
     e.preventDefault();
-
+  
     const usersCollectionRef = collection(db, 'users');
-    const q = query(usersCollectionRef, where('username', '==', username));
-
+    const lowercaseUsername = username.toLowerCase(); // Convert the input username to lowercase
+    const q = query(usersCollectionRef, where('username', '==', lowercaseUsername));
+  
     try {
       // Check if there are any documents with the same username
       const querySnapshot = await getDocs(q);
-
+  
       if (!querySnapshot.empty) {
-        const existingUsernames = querySnapshot.docs.map((doc) => doc.data().username);
-        if (existingUsernames.some((u) => u.toLowerCase() === username.toLowerCase())) {
-          setRegistrationMessage('Username already exists. Please choose a different one.');
-          return;
-         }
+        setRegistrationMessage('Username already exists. Please choose a different one.');
+        return;
       }
-
-      // If the username is available, add the user to Firestore
+  
+      // If the username is available, add the user to Firestore with the lowercase username
       await addDoc(usersCollectionRef, {
-        username:username.toLowerCase(),
+        username: lowercaseUsername,
         password,
       });
-
-      Cookies.set('username', username);
-
+  
+      Cookies.set('username', lowercaseUsername);
+  
       setRegistrationMessage('Registration successful! Redirecting...');
       setUsername('');
       setPassword('');
-
+  
       setTimeout(() => {
         navigate('/MainPage');
       }, 3000);
@@ -49,6 +47,7 @@ const Registration = () => {
       setRegistrationMessage('An error occurred during registration. Please try again later.');
     }
   };
+  
 
   return (
     <div className='container'>

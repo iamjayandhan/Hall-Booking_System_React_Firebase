@@ -16,44 +16,85 @@ const Login = () => {
 
   const navigate = useNavigate();
 
+  // const handleLogin = async (e) => {
+  //   e.preventDefault();
+
+  //   const usersCollectionRef = collection(db, 'users');
+  //   const q = query(usersCollectionRef, where('username', '==', username));
+
+  //   try {
+  //     // Query the Firestore collection to find the user by username
+  //     const querySnapshot = await getDocs(q);
+
+  //     if (!querySnapshot.empty) {
+  //       // User with the provided username exists, now check the password
+  //       const userDoc = querySnapshot.docs[0].data(); // Get the user document
+
+  //       if (userDoc.password === password) {
+  //         setLoginMessage('Authenticating...');
+  //         Cookies.set('username', username);
+
+  //         // Simulate a delay of 3 seconds before navigating to MainPage.js
+  //         setTimeout(() => {
+  //           setLoginMessage('');
+            
+  //           // navigate('/MainPage');
+  //           // Inside the handleLogin function after successful authentication:
+  //           navigate('/MainPage', { state: { username } });
+
+  //         }, 3000);
+  //       } else {
+  //         setLoginMessage('Invalid credentials. please try again.');
+  //       }
+  //     } else {
+  //       setLoginMessage('Invalid credentials or user not registered. please try again.');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error during login:', error);
+  //     setLoginMessage('An error occurred during login. Please try again later.');
+  //   }
+  // };
+
   const handleLogin = async (e) => {
     e.preventDefault();
-
+  
     const usersCollectionRef = collection(db, 'users');
-    const q = query(usersCollectionRef, where('username', '==', username));
-
+    const lowerCaseUsername = username.toLowerCase(); // Convert the input username to lowercase
+    const q = query(usersCollectionRef, where('username', '==', lowerCaseUsername));
+  
     try {
       // Query the Firestore collection to find the user by username
       const querySnapshot = await getDocs(q);
-
+  
       if (!querySnapshot.empty) {
         // User with the provided username exists, now check the password
         const userDoc = querySnapshot.docs[0].data(); // Get the user document
-
+  
         if (userDoc.password === password) {
           setLoginMessage('Authenticating...');
-          Cookies.set('username', username);
-
+          Cookies.set('username', lowerCaseUsername); // Store the lowercase username
+  
           // Simulate a delay of 3 seconds before navigating to MainPage.js
           setTimeout(() => {
             setLoginMessage('');
             
             // navigate('/MainPage');
             // Inside the handleLogin function after successful authentication:
-            navigate('/MainPage', { state: { username } });
-
+            navigate('/MainPage', { state: { username: lowerCaseUsername } });
+  
           }, 3000);
         } else {
-          setLoginMessage('Invalid credentials. please try again.');
+          setLoginMessage('Invalid credentials. Please try again.');
         }
       } else {
-        setLoginMessage('Invalid credentials or user not registered. please try again.');
+        setLoginMessage('Invalid credentials or user not registered. Please try again.');
       }
     } catch (error) {
       console.error('Error during login:', error);
       setLoginMessage('An error occurred during login. Please try again later.');
     }
   };
+  
 
   return (
     <div className='container'>
