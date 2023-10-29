@@ -58,6 +58,7 @@ const Registration = () => {
           required
           value={username}
           onChange={(e) => setUsername(e.target.value)}
+          autoComplete="off"
         />
         <br />
         <label htmlFor="password">Password:</label>

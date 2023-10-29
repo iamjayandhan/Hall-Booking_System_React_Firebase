@@ -66,6 +66,7 @@ const Login = () => {
           required
           value={username}
           onChange={(e) => setUsername(e.target.value)}
+          autoComplete="off"
         />
         <br />
         <label htmlFor="password">Password:</label>
@@ -89,7 +90,7 @@ const Login = () => {
           style={{
             position: 'absolute',
             top: '39%',
-            right: '20px',
+            right: '30px',
             transform: 'translateY(-50%)',
           }}
           onClick={() => setPasswordVisible(!passwordVisible)}
