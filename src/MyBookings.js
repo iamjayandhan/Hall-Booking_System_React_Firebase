@@ -203,6 +203,7 @@ const MyBookings = () => {
                     type="date"
                     value={updatedBooking.date}
                     min={currentdate}
+                    className="mybooking"
                     onChange={(e) =>
                       setUpdatedBooking({ ...updatedBooking, date: e.target.value })
                     }
@@ -216,6 +217,7 @@ const MyBookings = () => {
                   <input
                     type="time"
                     value={updatedBooking.startTime}
+                    className="mybooking"
                     onChange={(e) =>
                       setUpdatedBooking({ ...updatedBooking, startTime: e.target.value })
                     }
@@ -229,6 +231,7 @@ const MyBookings = () => {
                   <input
                     type="time"
                     value={updatedBooking.endTime}
+                    className="mybooking"
                     onChange={(e) =>
                       setUpdatedBooking({ ...updatedBooking, endTime: e.target.value })
                     }
