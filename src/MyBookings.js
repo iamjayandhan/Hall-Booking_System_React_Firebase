@@ -3,6 +3,8 @@ import { collection, query, where, getDocs, updateDoc, doc, deleteDoc } from 'fi
 import { db } from './firebase';
 import { Link } from 'react-router-dom';
 import Cookies from 'js-cookie';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
+
 
 const MyBookings = () => {
   const [bookings, setBookings] = useState([]);
@@ -12,6 +14,46 @@ const MyBookings = () => {
   const [sortByStartTime, setSortByStartTime] = useState(false);
 
   const username = Cookies.get('username');
+
+
+  const [customDialogOpen, setCustomDialogOpen] = useState(false);
+  const [customDialogTitle, setCustomDialogTitle] = useState('');
+  const [customDialogMessage, setCustomDialogMessage] = useState('');
+  const [customDialogButtonName, setCustomDialogButtonName] = useState('');
+
+
+  const CustomDialog = ({ open, onClose, title, message, buttonName }) => {
+    return (
+      <Dialog open={open} onClose={onClose}>
+        <DialogTitle>{title}</DialogTitle>
+        <DialogContent>
+          <p>{message}</p>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onClose} color="primary" autoFocus>
+            {buttonName}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    );
+  };
+
+  // Function to open the custom dialog
+  const openCustomDialog = (title, message, buttonName) => {
+    setCustomDialogTitle(title);
+    setCustomDialogMessage(message);
+    setCustomDialogButtonName(buttonName);
+    setCustomDialogOpen(true);
+  };
+
+  // Function to close the custom dialog
+  const closeCustomDialog = () => {
+    setCustomDialogTitle('');
+    setCustomDialogMessage('');
+    setCustomDialogButtonName('');
+    setCustomDialogOpen(false);
+  };
+
 
   useEffect(() => {
     if (username) {
@@ -108,7 +150,7 @@ const MyBookings = () => {
       });
   
       if (hasConflict) {
-        alert('This hall is already booked for the selected time. Please choose another time.');
+        openCustomDialog("Failed!","Hall is already booked for the selected time. Please choose another time","Ok");
         return;
       }
   
@@ -123,7 +165,7 @@ const MyBookings = () => {
   
       await updateDoc(bookingDocRef, { hallName, date, startTime, endTime });
   
-      alert('Booking successfully edited!');
+      openCustomDialog("Success!","Booking successfully edited!","Done");
     } catch (error) {
       console.error('Error updating booking:', error);
     }
@@ -136,6 +178,7 @@ const MyBookings = () => {
       try {
         const bookingDocRef = doc(db, 'bookings', bookingId);
         await deleteDoc(bookingDocRef);
+        openCustomDialog("Success!","Booking cancelled successfully","Done");
 
         setBookings((bookings) => bookings.filter((booking) => booking.id !== bookingId));
       } catch (error) {
@@ -171,6 +214,15 @@ const MyBookings = () => {
 
   return (
     <div>
+
+      <CustomDialog
+        open={customDialogOpen}
+        onClose={closeCustomDialog}
+        title={customDialogTitle}
+        message={customDialogMessage}
+        buttonName={customDialogButtonName}
+      />
+
       <h1>My Bookings for {username}</h1>
       <table>
         <thead>

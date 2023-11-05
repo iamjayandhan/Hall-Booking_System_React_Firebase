@@ -4,16 +4,51 @@
   import { addDoc,collection, getDocs, query, where } from 'firebase/firestore';
   import { cleanupExpiredBookings } from './cleanup';
   import { Link } from 'react-router-dom';
-  import Cookies from 'js-cookie'; // Import the Cookies library
+  import Cookies from 'js-cookie';
   import { debounce } from 'lodash'; // Import the debounce function from the lodash library
-
-
-
+  import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
+  
   const MainPage = () => {
     const username = Cookies.get('username');
 
+    //popup
+    const [customDialogOpen, setCustomDialogOpen] = useState(false);
+    const [customDialogTitle, setCustomDialogTitle] = useState('');
+    const [customDialogMessage, setCustomDialogMessage] = useState('');
+    const [customDialogButtonName, setCustomDialogButtonName] = useState('');
 
 
+    const CustomDialog = ({ open, onClose, title, message, buttonName }) => {
+      return (
+        <Dialog open={open} onClose={onClose}>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogContent>
+            <p>{message}</p>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={onClose} color="primary" autoFocus>
+              {buttonName}
+            </Button>
+          </DialogActions>
+        </Dialog>
+      );
+    };
+
+    // Function to open the custom dialog
+    const openCustomDialog = (title, message, buttonName) => {
+      setCustomDialogTitle(title);
+      setCustomDialogMessage(message);
+      setCustomDialogButtonName(buttonName);
+      setCustomDialogOpen(true);
+    };
+
+    // Function to close the custom dialog
+    const closeCustomDialog = () => {
+      setCustomDialogTitle('');
+      setCustomDialogMessage('');
+      setCustomDialogButtonName('');
+      setCustomDialogOpen(false);
+    };
 
     const [searchInput, setSearchInput] = useState('');
     const [filteredHalls, setFilteredHalls] = useState([]);
@@ -40,26 +75,19 @@
         debouncedFilterHalls(lowercaseSearch);
       };
 
-
-    
-
-
-
-        
     const handleRefresh = async () => {
       try {
         await cleanupExpiredBookings(); // Call the cleanup function
-        alert('Cleanup function executed successfully');
+        openCustomDialog("Refresh Status","Database is Up to date! Please proceed.","Done");
+
       } catch (error) {
         console.error('Error executing cleanup function:', error);
-        alert('Error executing cleanup function');
+        openCustomDialog("Refresh Status","Unable to Refresh Database: "+error,"Ok");
       }
     };
     
-
     const copyToClipboard = (e, hall) => {
       e.preventDefault(); // Prevent the default button behavior (form submission, etc.)
-    
       const textToCopy = `Hall Name: ${hall.name}\nVenue: ${hall.venue}\nSeating Capacity: ${hall.seating}`;
     
       const copyButton = e.currentTarget; // Reference to the clicked button
@@ -76,6 +104,7 @@
           })
           .catch((error) => {
             console.error('Failed to copy to clipboard:', error);
+            openCustomDialog("Copy Status", "Failed to copy: " + error, "Ok");
           });
       } else {
         // Fallback for browsers that do not support Clipboard API
@@ -93,12 +122,11 @@
           }, 2000); // Revert back to "Copy" after 2 seconds
         } catch (error) {
           console.error('Copying to clipboard is not supported:', error);
+          openCustomDialog("Copy Status","An Unexpected error occured: "+error,"Done");
         }
       }
     };
     
-
-
     const handleLogout = () => {
       // Delete the username cookie
       Cookies.remove('username');
@@ -150,6 +178,7 @@
         ],
       },
     ]);
+
     const [isBookingModalVisible, setBookingModalVisible] = useState(false);
     const [selectedHall, setSelectedHall] = useState(null);
     const [bookingDate, setBookingDate] = useState('');
@@ -166,24 +195,17 @@
       setBookingModalVisible(false);
     };
 
-
     const handleBookNow = async () => {
       if (!selectedHall || !bookingDate || !bookingTimeFrom || !bookingTimeTo || !bookingUsername) {
-        alert('Please fill in all booking details.');
+        openCustomDialog("Warning!","Please fill in all booking details","Ok");
         return;
       }
-    
-      // if (username === bookingUsername) {
-      //   alert('You cannot make the same booking as the currently logged-in user.');
-      //   return;
-      // }
 
       // Check if endTime is less than or equal to startTime
       if (bookingTimeTo <= bookingTimeFrom) {
-        alert('End time cannot be earlier than or equal to the start time.');
+        openCustomDialog("Warning!", "End time cannot be earlier than or equal to the start time","Done");
         return;
       }
-
     
       const newBooking = {
         hallName: selectedHall.name,
@@ -220,7 +242,7 @@
         );
     
         if (startConflict || endConflict) {
-          alert('This hall is already booked for the selected time. Please choose another time.');
+          openCustomDialog("Booking Failed!","This hall is already booked for the selected time. Please choose another time","Done");
           return true; // Conflict
         }
     
@@ -230,7 +252,7 @@
       if (!conflicts) {
         try {
           await addDoc(bookingsCollectionRef, newBooking);
-          alert('Booking successfully added to Firestore!');
+          openCustomDialog("Booking Successful!","Your booking was successful. Enjoy your time!","Done");
           setBookingDate('');
           setBookingTimeFrom('');
           setBookingTimeTo('');
@@ -238,7 +260,7 @@
           setBookingModalVisible(false);
         } catch (error) {
           console.error('Error adding booking to Firestore: ', error);
-          alert('Failed to add the booking. Please try again later.');
+          openCustomDialog("Error!","Error adding booking to Firestore: "+error,"Done");
         }
       }
     };
@@ -250,138 +272,127 @@
 
     return (
       <div className="Main">
-      <div className="MainPage">
-        
-        <h1 className="greet">Welcome, {username}!</h1>
-
-        <div className="button-container">
-
-        {/* <div className="type-selector"> */}
-        <button className="button" onClick={() => setSelectedType('hall')}>Hall</button>
-        <button className="button" onClick={() => setSelectedType('lab')}>Lab</button>
-        {/* </div> */}
-
-        <button className="button" onClick={handleRefresh} style={{ marginBottom: '0px'}}>Refresh</button>
+        <div className="MainPage">
+          <h1 className="greet">Welcome, {username}!</h1>
   
-        <Link to="/ViewAllBookings">
-          <button className="button3">View All Bookings</button>
-        </Link>
+          <div className="button-container">
+            <button className="button" onClick={() => setSelectedType('hall')}>
+              Hall
+            </button>
+            <button className="button" onClick={() => setSelectedType('lab')}>
+              Lab
+            </button>
+            <button className="button" onClick={handleRefresh} style={{ marginBottom: '0px' }}>
+              Refresh
+            </button>
+            <Link to="/ViewAllBookings">
+              <button className="button3">View All Bookings</button>
+            </Link>
+            <Link to={{ pathname: '/MyBookings', state: { username } }}>
+              <button className="button">My Bookings</button>
+            </Link>
+            <button className="button" onClick={handleLogout}>
+              Logout
+            </button>
+          </div>
+  
+          <h1>Available {selectedType === 'hall' ? 'Hall' : 'Lab'} Details</h1>
+  
+          <input
+            type="text"
+            placeholder="Search..."
+            value={searchInput}
+            onChange={(e) => {
+              handleSearchInputChange(e);
+            }}
+            style={{ width: '15rem' }}
+          />
 
-        
-        <Link to={{ pathname: '/MyBookings', state: { username } }}>
-         <button className="button">My Bookings</button>
-        </Link>
-      
-        <button className="button" onClick={handleLogout}>Logout</button>
-
-        </div>
-
-        <h1>Available {selectedType === 'hall' ? 'Hall' : 'Lab'} Details</h1>
+          
+      <CustomDialog
+        open={customDialogOpen}
+        onClose={closeCustomDialog}
+        title={customDialogTitle}
+        message={customDialogMessage}
+        buttonName={customDialogButtonName}
+      />
 
 
-
-
-
+       {/* Booking Modal */}
+          <Dialog open={isBookingModalVisible} onClose={closeBookingModal}>
+          <DialogTitle className="dialog-title">Book {selectedType === 'hall' ? `Hall ${selectedHall?.name}` : `Lab ${selectedHall?.name}`}</DialogTitle>
+  <DialogContent>
+    <form>
+      <div className="form-group">
+        <label className="form-label">Date:</label>
+        <input
+          type="date"
+          value={bookingDate}
+          min={currentdate}
+          onChange={(e) => setBookingDate(e.target.value)}
+          className="form-input"
+        />
+      </div>
+      <div className="form-group">
+        <label className="form-label">Time From:</label>
+        <input
+          type="time"
+          value={bookingTimeFrom}
+          onChange={(e) => setBookingTimeFrom(e.target.value)}
+          className="form-input"
+        />
+      </div>
+      <div className="form-group">
+        <label className="form-label">Time To:</label>
+        <input
+          type="time"
+          value={bookingTimeTo}
+          onChange={(e) => setBookingTimeTo(e.target.value)}
+          className="form-input"
+        />
+      </div>
+      <div className="form-group">
+        <label className="form-label">Handler:</label>
         <input
           type="text"
-          placeholder="Search..."
-          value={searchInput}
-          onChange={(e) => {handleSearchInputChange(e)}}
-          style={{ width: '15rem' }}
+          value={bookingUsername}
+          onChange={(e) => setBookingUsername(e.target.value)}
+          className="form-input"
         />
+      </div>
+      <DialogActions className="dialog-actions">
+        <Button onClick={handleBookNow} color="primary" variant="contained" className="action-button">
+          Confirm
+        </Button>
+        <Button onClick={closeBookingModal} color="primary" variant="contained" className="action-button">
+          Cancel
+        </Button>
+      </DialogActions>
+    </form>
+  </DialogContent>
+</Dialog>
 
-
-
-                {/* Booking Modal */}
-                {isBookingModalVisible && (
-          <div className="booking-modal">
-            <h2>Book {selectedType === 'hall' ? 'Hall' : 'Lab'}</h2>
-            <form>
-              <div className="form-group">
-                <label>Date:</label>
-                <input
-                  type="date"
-                  value={bookingDate}
-                  min={currentdate}
-                  onChange={(e) => setBookingDate(e.target.value)}
-                />
-              </div>
-              <div className="form-group">
-                <label>Time From:</label>
-                <input
-                  type="time"
-                  value={bookingTimeFrom}
-                  onChange={(e) => setBookingTimeFrom(e.target.value)}
-                />
-              </div>
-
-
-
-
-              <div className="form-group">
-                <label>Time To:</label>
-                <input
-                  type="time"
-                  value={bookingTimeTo}
-                  onChange={(e) => setBookingTimeTo(e.target.value)}
-                />
-              </div>
-              <div className="form-group">
-                <label>Handler:</label>
-                <input
-                  type="text"
-                  value={bookingUsername}
-                  onChange={(e) => setBookingUsername(e.target.value)}
-                />
-              </div>
-              <button type="button" onClick={handleBookNow}>
-                Confirm Booking
-              </button>
-              <button type="button" onClick={closeBookingModal}>
-                Cancel
-              </button>
-            </form>
-          </div>
-        )}
-
-        <div className="hall-cards">
-
-
-          {(searchInput === ''
-            ? hallAndLabDetails.find((item) => item.type === selectedType).data
-            : filteredHalls
-          ).map((hall) => (
+  
+          <div className="hall-cards">
+            {(searchInput === ''
+              ? hallAndLabDetails.find((item) => item.type === selectedType).data
+              : filteredHalls
+            ).map((hall) => (
               <div className="hall-card" key={hall.id}>
                 <h2>{hall.name}</h2>
                 <p>Venue: {hall.venue}</p>
                 <p>Seating Capacity: {hall.seating}</p>
-                <button
-                  className="view-button"
-                  onClick={() => openBookingModal(hall)}
-                >
+                <button className="view-button" onClick={() => openBookingModal(hall)}>
                   Book Now
                 </button>
-                
-
-
-                <button
-                className="copy-button"
-                onClick={(e) => copyToClipboard(e,hall)}
-              >
-                Copy
-              </button>
-
-
-
+                <button className="copy-button" onClick={(e) => copyToClipboard(e, hall)}>
+                  Copy
+                </button>
               </div>
             ))}
+          </div>
         </div>
-        
-        {/* Refresh Button */}
-
-        
-        </div>
-        </div>
+      </div>
     );
   };
 
