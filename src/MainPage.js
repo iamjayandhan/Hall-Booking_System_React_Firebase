@@ -308,71 +308,45 @@
       <div className="Main">
         <div className="MainPage">
           <h1 className="greet">Welcome, {username}!</h1>
-  
-          {/* <div className="button-container">
-            <button className="button" onClick={() => setSelectedType('hall')}>
-              Hall
-            </button>
-            <button className="button" onClick={() => setSelectedType('lab')}>
-              Lab
-            </button>
-            <button className="button" onClick={handleRefresh} style={{ marginBottom: '0px' }}>
-              Refresh
-            </button>
-            <Link to="/ViewAllBookings">
-              <button className="button3">View All Bookings</button>
-            </Link>
-            <Link to={{ pathname: '/MyBookings', state: { username } }}>
-              <button className="button">My Bookings</button>
-            </Link>
-            <button className="button" onClick={handleLogout}>
-              Logout
-            </button>
-          </div> */}
-
           <SpeedDial
-  ariaLabel="SpeedDial example"
-  sx={{ position: 'fixed', bottom: 16, right: 16}}
-  icon={<SpeedDialIcon className="custom-speed-dial-icon" />}
-  onClose={() => setSpeedDialOpen(false)}
-  open={speedDialOpen}
-  onClick={() => setSpeedDialOpen(!speedDialOpen)}
-  FabProps={{
-    className: 'custom-speed-dial-fab',
-  }}
->
-  {actions.map((action) => (
-    <SpeedDialAction
-      key={action.name}
-      icon={action.icon}
-      tooltipTitle={action.name}
-      onClick={() => {
-        setSpeedDialOpen(false);
-        action.action && action.action();
-      }}
-    >
-      {/* Use Button with custom styles */}
-      <Button
-        component={Link}
-        to={action.to}
-        style={{
-          textTransform: 'none',
-          color: 'inherit',
-          textDecoration: 'none',
-          textAlign: 'left', // Adjust alignment as needed
-          paddingLeft: '10px', // Add padding for button appearance
-        }}
-      >
-        {action.name}
-      </Button>
-    </SpeedDialAction>
-  ))}
-</SpeedDial>;
+            ariaLabel="SpeedDial example"
+            sx={{ position: 'fixed', bottom: 16, right: 16}}
+            icon={<SpeedDialIcon className="custom-speed-dial-icon" />}
+            onClose={() => setSpeedDialOpen(false)}
+            open={speedDialOpen}
+            onClick={() => setSpeedDialOpen(!speedDialOpen)}
+            FabProps={{
+              className: 'custom-speed-dial-fab',
+            }}
+          >
+          {actions.map((action) => (
+            <SpeedDialAction
+              key={action.name}
+              icon={action.icon}
+              tooltipTitle={action.name}
+              onClick={() => {
+                setSpeedDialOpen(false);
+                action.action && action.action();
+              }}
+            >
+              {/* Use Button with custom styles */}
+              <Button
+                component={Link}
+                to={action.to}
+                style={{
+                  textTransform: 'none',
+                  color: 'inherit',
+                  textDecoration: 'none',
+                  textAlign: 'left', 
+                  paddingLeft: '10px', 
+                }}
+              >
+                {action.name}
+              </Button>
+            </SpeedDialAction>
+          ))}
+        </SpeedDial>
 
-
-
-
-  
           <h1>Available {selectedType === 'hall' ? 'Hall' : 'Lab'} Details</h1>
   
           <input
