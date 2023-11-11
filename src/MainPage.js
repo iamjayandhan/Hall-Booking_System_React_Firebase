@@ -6,7 +6,11 @@
   import { Link } from 'react-router-dom';
   import Cookies from 'js-cookie';
   import { debounce } from 'lodash'; // Import the debounce function from the lodash library
-  import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
+  import { Dialog, DialogTitle, DialogContent, DialogActions, Button ,SpeedDial,
+    SpeedDialIcon,
+    SpeedDialAction,} from '@mui/material';
+
+
   
   const MainPage = () => {
     const username = Cookies.get('username');
@@ -268,6 +272,36 @@
     
     const currentdate = new Date().toISOString().split('T')[0];
     
+
+
+    const [speedDialOpen, setSpeedDialOpen] = useState(false);
+
+
+    const actions = [
+      { icon: <span>Halls</span>, name: 'Hall', action: () => setSelectedType('hall') },
+      { icon: <span>Labs</span>, name: 'Lab', action: () => setSelectedType('lab') },
+      { icon: <span>Refresh</span>, name: 'Refresh', action: handleRefresh },
+      {
+        icon: (
+          <Link to="/ViewAllBookings" style={{ textDecoration: 'none', color: 'inherit',height: '25px'}}>
+            <span>All Bookings</span>
+          </Link>
+        ),
+        name: 'View All Bookings',
+      },
+      {
+        icon: (
+          <Link
+            to={{ pathname: '/MyBookings', state: { username } }}
+            style={{ textDecoration: 'none', color: 'inherit' }}
+          >
+            <span>My Bookings</span>
+          </Link>
+        ),
+        name: 'My Bookings',
+      },
+      { icon: <span>Logout</span>, name: 'Logout', action: handleLogout },
+    ];
     
 
     return (
@@ -275,7 +309,7 @@
         <div className="MainPage">
           <h1 className="greet">Welcome, {username}!</h1>
   
-          <div className="button-container">
+          {/* <div className="button-container">
             <button className="button" onClick={() => setSelectedType('hall')}>
               Hall
             </button>
@@ -294,7 +328,50 @@
             <button className="button" onClick={handleLogout}>
               Logout
             </button>
-          </div>
+          </div> */}
+
+          <SpeedDial
+  ariaLabel="SpeedDial example"
+  sx={{ position: 'fixed', bottom: 16, right: 16}}
+  icon={<SpeedDialIcon className="custom-speed-dial-icon" />}
+  onClose={() => setSpeedDialOpen(false)}
+  open={speedDialOpen}
+  onClick={() => setSpeedDialOpen(!speedDialOpen)}
+  FabProps={{
+    className: 'custom-speed-dial-fab',
+  }}
+>
+  {actions.map((action) => (
+    <SpeedDialAction
+      key={action.name}
+      icon={action.icon}
+      tooltipTitle={action.name}
+      onClick={() => {
+        setSpeedDialOpen(false);
+        action.action && action.action();
+      }}
+    >
+      {/* Use Button with custom styles */}
+      <Button
+        component={Link}
+        to={action.to}
+        style={{
+          textTransform: 'none',
+          color: 'inherit',
+          textDecoration: 'none',
+          textAlign: 'left', // Adjust alignment as needed
+          paddingLeft: '10px', // Add padding for button appearance
+        }}
+      >
+        {action.name}
+      </Button>
+    </SpeedDialAction>
+  ))}
+</SpeedDial>;
+
+
+
+
   
           <h1>Available {selectedType === 'hall' ? 'Hall' : 'Lab'} Details</h1>
   

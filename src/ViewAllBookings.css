@@ -99,6 +99,9 @@ table th button.down-arrow::after {
     font-size: 24px;
   }
 
+  .greet{
+    margin-top: 40px;
+  }
   /* Center the table */
   table {
     width: 50%;

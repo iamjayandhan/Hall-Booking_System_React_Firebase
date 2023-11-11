@@ -144,6 +144,7 @@ input {
   background-color: #DAFFFB;
 }
 
+
 button[type="button"] {
   padding: 10px 20px;
   background-color: #176B87;
@@ -177,7 +178,7 @@ button[type="button"]:hover {
 }
 
 .greet{
-  margin-bottom: 3rem;
+  margin-bottom: 0rem;
 }
 
 
@@ -278,3 +279,7 @@ button[type="button"]:hover {
 .action-button {
   width: 45%;
 }
+
+
+
+
