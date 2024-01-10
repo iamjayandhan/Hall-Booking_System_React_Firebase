@@ -9,6 +9,7 @@
   import { Dialog, DialogTitle, DialogContent, DialogActions, Button ,SpeedDial,
     SpeedDialIcon,
     SpeedDialAction,} from '@mui/material';
+  import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 
   
@@ -20,6 +21,64 @@
     const [customDialogTitle, setCustomDialogTitle] = useState('');
     const [customDialogMessage, setCustomDialogMessage] = useState('');
     const [customDialogButtonName, setCustomDialogButtonName] = useState('');
+
+    const [checkAvailabilityDialogOpen, setCheckAvailabilityDialogOpen] = useState(false);
+    const [checkAvailabilityHall, setCheckAvailabilityHall] = useState('');
+    const [checkAvailabilityDate, setCheckAvailabilityDate] = useState('');
+    const [checkAvailabilityTimeFrom, setCheckAvailabilityTimeFrom] = useState('');
+    const [checkAvailabilityTimeTo, setCheckAvailabilityTimeTo] = useState('');
+    const [availabilityResult, setAvailabilityResult] = useState('');
+
+    const openCheckAvailabilityDialog = () => {
+      setCheckAvailabilityDialogOpen(true);
+    };
+  
+    const closeCheckAvailabilityDialog = () => {
+      setCheckAvailabilityDialogOpen(false);
+      setAvailabilityResult('');
+    };
+
+    const handleCheckAvailability = async () => {
+      // Validate that end time is not before start time
+      if (checkAvailabilityTimeTo <= checkAvailabilityTimeFrom) {
+        openCustomDialog('Invalid Time', 'End time cannot be earlier than or equal to the start time', 'Ok');
+        return;
+      }
+    
+      // Query Firebase to check availability
+      const bookingsCollectionRef = collection(db, 'bookings');
+    
+      const hallQuery = query(
+        bookingsCollectionRef,
+        where('hallName', '==', checkAvailabilityHall),
+        where('date', '==', checkAvailabilityDate)
+      );
+    
+      const querySnapshot = await getDocs(hallQuery);
+    
+      // Check if there is any overlap with existing bookings
+      const isAvailable = querySnapshot.docs.every((doc) => {
+        const booking = doc.data();
+        // Validate that start time is not equal to end time for existing bookings
+        if (
+          (booking.startTime === checkAvailabilityTimeFrom && booking.endTime === checkAvailabilityTimeFrom) ||
+          (booking.startTime === checkAvailabilityTimeTo && booking.endTime === checkAvailabilityTimeTo)
+        ) {
+          return false; // Conflict
+        }
+    
+        return (
+          booking.endTime <= checkAvailabilityTimeFrom || booking.startTime >= checkAvailabilityTimeTo
+        );
+      });
+    
+      setAvailabilityResult(isAvailable ? 'Available!' : 'Not Available!');
+      openCustomDialog('Availability Status', `Hall is ${isAvailable ? 'Available!✅' : 'Not Available!❌'}`, 'Ok');
+    };
+    
+    
+
+    
 
 
     const CustomDialog = ({ open, onClose, title, message, buttonName }) => {
@@ -301,12 +360,86 @@
         name: 'My Bookings',
       },
       { icon: <span>Logout</span>, name: 'Logout', action: handleLogout },
+      { icon: <span>Availability</span>, name: 'Check Availability', action: openCheckAvailabilityDialog },
+
     ];
+    const temp=availabilityResult;
     
 
     return (
       <div className="Main">
         <div className="MainPage">
+          <h1 style={{ color: 'white', fontSize: '0.1px', fontWeight: 'bold' }}>{temp}</h1>
+
+        {/* Check Availability Dialog */}
+        <Dialog open={checkAvailabilityDialogOpen} onClose={closeCheckAvailabilityDialog}>
+          <DialogTitle>Check Availability</DialogTitle>
+          <DialogContent>
+            <div className="form-group">
+              <label className="form-label">Hall Name:</label>
+              <input
+                type="text"
+                value={checkAvailabilityHall}
+                onChange={(e) => setCheckAvailabilityHall(e.target.value)}
+                className="form-input"
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Date:</label>
+              <input
+                type="date"
+                value={checkAvailabilityDate}
+                onChange={(e) => setCheckAvailabilityDate(e.target.value)}
+                min={currentdate}
+                className="form-input"
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Time From:</label>
+              <input
+                type="time"
+                value={checkAvailabilityTimeFrom}
+                onChange={(e) => setCheckAvailabilityTimeFrom(e.target.value)}
+                className="form-input"
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Time To:</label>
+              <input
+                type="time"
+                value={checkAvailabilityTimeTo}
+                onChange={(e) => setCheckAvailabilityTimeTo(e.target.value)}
+                className="form-input"
+              />
+            </div>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCheckAvailability} color="primary">
+              Check
+            </Button>
+            <Button onClick={closeCheckAvailabilityDialog} color="primary">
+              Cancel
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+
+        <div style={{ 
+  boxShadow: '2px 2px 5px rgba(0, 0, 0, 0.5)', 
+  borderRadius: '50%', 
+  padding: '5px', 
+  marginTop:'30px',
+  width: '50px', 
+  height: '50px', 
+  display: 'flex', 
+  justifyContent: 'center', 
+  alignItems: 'center',
+  margin: 'auto'
+}}>
+  <AccountCircleIcon style={{ fontSize: 100, color: 'whitesmoke' }} />
+</div>
+
+
           <h1 className="greet">Welcome, {username}!</h1>
           <SpeedDial
             ariaLabel="SpeedDial example"
@@ -358,6 +491,8 @@
             }}
             style={{ width: '15rem' }}
           />
+
+      {/* <button className="check" onClick={openCheckAvailabilityDialog}>Check Availability</button> */}
 
           
       <CustomDialog

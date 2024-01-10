@@ -177,6 +177,19 @@ button[type="button"]:hover {
   max-width: 4rem;
 }
 
+.check {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: #176B87;
+  color: #fff;
+  border: none;
+  padding: 15px 10px;
+  cursor: pointer;
+  max-width: 10rem;
+  font-size: large;
+}
+
 .greet{
   margin-bottom: 0rem;
 }
