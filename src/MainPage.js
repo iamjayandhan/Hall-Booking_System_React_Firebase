@@ -40,10 +40,23 @@
       setAvailabilityResult('');
     };
 
+
+
     const handleCheckAvailability = async () => {
       // Validate that end time is not before start time
       if (checkAvailabilityTimeTo <= checkAvailabilityTimeFrom) {
         openCustomDialog('Invalid Time', 'End time cannot be earlier than or equal to the start time', 'Ok');
+        return;
+      }
+    
+      // Check if the provided hall name is valid
+      const isValidHall = hallAndLabDetails.some((category) =>
+        category.data.some((hall) => hall.name === checkAvailabilityHall)
+      );
+    
+      if (!isValidHall) {
+        setAvailabilityResult('Invalid Hall Name');
+        openCustomDialog('Availability Status', 'Invalid Hall Name', 'Ok');
         return;
       }
     
@@ -59,24 +72,35 @@
       const querySnapshot = await getDocs(hallQuery);
     
       // Check if there is any overlap with existing bookings
+      // ...
+
       const isAvailable = querySnapshot.docs.every((doc) => {
         const booking = doc.data();
-        // Validate that start time is not equal to end time for existing bookings
-        if (
-          (booking.startTime === checkAvailabilityTimeFrom && booking.endTime === checkAvailabilityTimeFrom) ||
-          (booking.startTime === checkAvailabilityTimeTo && booking.endTime === checkAvailabilityTimeTo)
-        ) {
-          return false; // Conflict
-        }
-    
+        const bookedStartTime = new Date(`${checkAvailabilityDate} ${booking.startTime}`).getTime();
+        const bookedEndTime = new Date(`${checkAvailabilityDate} ${booking.endTime}`).getTime();
+        const checkStartTime = new Date(`${checkAvailabilityDate} ${checkAvailabilityTimeFrom}`).getTime();
+        const checkEndTime = new Date(`${checkAvailabilityDate} ${checkAvailabilityTimeTo}`).getTime();
+      
+        console.log('Booked Start Time:', bookedStartTime);
+        console.log('Booked End Time:', bookedEndTime);
+        console.log('Check Start Time:', checkStartTime);
+        console.log('Check End Time:', checkEndTime);
+      
+        // Check for conflicts by ensuring the new time range is outside of existing bookings
         return (
-          booking.endTime <= checkAvailabilityTimeFrom || booking.startTime >= checkAvailabilityTimeTo
+          checkStartTime >= bookedEndTime || // New booking starts after existing booking
+          checkEndTime <= bookedStartTime // New booking ends before existing booking
         );
       });
-    
+      
+      console.log('Is Available:', isAvailable);
+      
       setAvailabilityResult(isAvailable ? 'Available!' : 'Not Available!');
       openCustomDialog('Availability Status', `Hall is ${isAvailable ? 'Available!✅' : 'Not Available!❌'}`, 'Ok');
+      
     };
+    
+    
     
     
 
