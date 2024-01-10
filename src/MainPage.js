@@ -10,6 +10,7 @@
     SpeedDialIcon,
     SpeedDialAction,} from '@mui/material';
   import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+  import { Analytics } from '@vercel/analytics/react';
 
 
   
@@ -557,7 +558,7 @@
     </form>
   </DialogContent>
 </Dialog>
-
+          <Analytics />
   
           <div className="hall-cards">
             {(searchInput === ''
