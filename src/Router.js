@@ -1,6 +1,5 @@
-// AppRouter.js
 import React, { useEffect, useState } from 'react';
-import { Route, Routes, useNavigate } from 'react-router-dom';
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
 import Registration from './Registration';
@@ -8,6 +7,7 @@ import Login from './Login';
 import MainPage from './MainPage';
 import ViewAllBookings from './ViewAllBookings';
 import MyBookings from './MyBookings';
+
 import './styles.css';
 
 const AppRouter = () => {
@@ -17,21 +17,20 @@ const AppRouter = () => {
   const [customDialogButtonName, setCustomDialogButtonName] = useState('');
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const checkAuth = () => {
       const username = Cookies.get('username');
-      const currentPath = window.location.pathname;
+      const currentPath = location.pathname;
 
-      // Allow access to login and registration pages
-      if ((currentPath === '/login' || currentPath === '/registration') && username) {
+      // Allow access to login page
+      if (currentPath === '/login' && username) {
         navigate('/MainPage'); // Redirect to MainPage if user is already logged in
-      } else if ((currentPath === '/login' || currentPath === '/registration') && !username) {
-        return; // Allow access to login and registration pages
       }
 
       // Redirect unauthorized users to login page
-      if (!username && currentPath !== '/login') {
+      if (!username && currentPath !== '/login' && currentPath !== '/registration' && currentPath !== '/') {
         navigate('/login');
         // Show custom dialog popup
         setCustomDialogTitle('Unauthorized Access');
@@ -42,7 +41,7 @@ const AppRouter = () => {
     };
 
     checkAuth(); // Check authentication when component mounts
-  }, [navigate]);
+  }, [navigate, location]);
 
   const handleDialogClose = () => {
     setCustomDialogOpen(false);
